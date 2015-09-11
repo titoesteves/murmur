@@ -19,6 +19,7 @@ var ViewAllMessages = React.createClass({
           message={ message.message }
           comments={ message.comments }
           votes={ message.votes }
+          messageId={ message.messageId }
           timestamp={ message.timestamp }/>
       )
     }
@@ -31,7 +32,7 @@ var ViewAllMessages = React.createClass({
       }),
     }
     return (
-      <div style={this.styles.messageRows}>
+      <div style={ this.styles.messageRows }>
         { messageRowsSortedOptions[this.props.sortBy] }
       </div>
     )
