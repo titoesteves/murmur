@@ -11,7 +11,7 @@ module.exports = React.createClass({
 
         var mapOptions = {
                 center: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
-                zoom: 5
+                zoom: 12
             },
             map = new google.maps.Map(this.getDOMNode(), mapOptions);
 
