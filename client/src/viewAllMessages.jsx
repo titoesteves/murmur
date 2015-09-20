@@ -58,11 +58,14 @@ var ViewAllMessages = React.createClass({
           messageRows.push(
             <Message
               messageId={ message._id }
-              message={ message.message } 
+              message={ message.message }
               comments={ message.comments }
-              votes={ message.votes }
+              totalVotes={ message.totalVotes }
+              downVotes={ message.downVotes }
+              upVotes={ message.upVotes }
               comments={ message.comments }
-              favorites={ message.favorites } />
+              favorites={ message.favorites }
+              timestamp={ message.timestamp } />
           );
         }
         // this.setState({messages: "easy"});

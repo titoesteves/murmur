@@ -18,16 +18,33 @@ var Message = React.createClass({
   },
 
   // Post upvote data to Server
-  upVote: function(event){
-    var messageId = $(event.target).closest('.jumbotron').attr('id');
+  upVoteToggle: function(){
+    console.log("togged upVote!");
+    var upVotes = this.props.upVotes; //favorites is a object of objects with userIds as keys and true/false as values.    
+    var totalVotes = this.props.totalVotes;
+    var voteLoc = upVotes.indexOf(window.sessionStorage.userId);
+    if (voteLoc !== -1){
+      upVotes.splice(voteLoc, 1);
+      var newTotal = totalVotes - 1;
+    }
+    else {
+      upVotes.push(window.sessionStorage.userId);
+      var newTotal = totalVotes + 1;
+    }
+    if (this.props.upVotes.indexOf(window.sessionStorage.userId) !== -1) {
+      // this.upVoteToggle();
+    }
+    console.log("newTotal", newTotal);
+    console.log("upVotes", upVotes);
+
     $.ajax({
       type: 'POST',
-      url: url + 'vote' ,
+      url: url + 'upVote' ,
       contentType: 'application/json',
       data: JSON.stringify({
-        "messageId": messageId,
-        "vote": true,
-        "token": this.props.token
+        "messageId": this.props.messageId,
+        "upVotes": upVotes,
+        "totalVotes": newTotal
       }),
       success: function(){
       }
@@ -35,17 +52,33 @@ var Message = React.createClass({
   },
 
   // Post downvote data to Server
-  downVote: function(event){
+  downVoteToggle: function(){
+    console.log("togged downvote!");
+    var downVotes = this.props.downVotes; //favorites is a object of objects with userIds as keys and true/false as values.    
+    var totalVotes = this.props.totalVotes;
+    var voteLoc = downVotes.indexOf(window.sessionStorage.userId);
+    if (voteLoc !== -1){
+      downVotes.splice(voteLoc, 1);
+      var newTotal = totalVotes + 1;
+    }
+    else {
+      downVotes.push(window.sessionStorage.userId);
+      var newTotal = totalVotes - 1;
+    }
+    if (this.props.upVotes.indexOf(window.sessionStorage.userId) !== -1) {
+      // this.upVoteToggle();
+    }
+    console.log("newTotal", newTotal);
+    console.log("downVotes", downVotes);
 
-    var messageId = $(event.target).closest('.jumbotron').attr('id');
     $.ajax({
       type: 'POST',
-      url: url + 'vote' ,
+      url: url + 'downVote' ,
       contentType: 'application/json',
       data: JSON.stringify({
-        "messageId": messageId,
-        "vote": false,
-        "token": this.props.token
+        "messageId": this.props.messageId,
+        "downVotes": downVotes,
+        "totalVotes": newTotal
       }),
       success: function(){
       }
@@ -87,6 +120,7 @@ var Message = React.createClass({
   },
 
   render: function() {
+    console.log(this.props.timestamp);
     var commentRows = [];
     if(this.props.comments.length !== 0){
       for(commentKey in this.props.comments){
@@ -149,9 +183,9 @@ var Message = React.createClass({
           </div>
           <div className="votes col-xs-2" style={ this.styles.votes }>
             <div style={ this.styles.voteContainer }>
-              <i className="glyphicon glyphicon-chevron-up" style={{color: "#0000FF"}} onClick={ this.upVote }></i>
-              <span className="count" style={{fontFamily: 'Alegreya'}}> { this.props.votes } </span>
-              <i className="glyphicon glyphicon-chevron-down" style={{color: "#0000FF"}} onClick={ this.downVote }></i>
+              <i className="glyphicon glyphicon-chevron-up" style={{color: "#0000FF", cursor:"pointer"}} onClick={ this.upVoteToggle }></i>
+              <span className="count" style={{fontFamily: 'Alegreya'}}> { this.props.totalVotes } </span>
+              <i className="glyphicon glyphicon-chevron-down" style={{color: "#0000FF", cursor:"pointer"}} onClick={ this.downVoteToggle }></i>
             </div>
           </div>
 
@@ -171,7 +205,7 @@ var Message = React.createClass({
               <div className="commentViewToggle" onClick={ this.toggleCommentsView }>
                 <i className="glyphicon glyphicon-comment" style={ this.styles.iconStyle }></i>
                 <span style={{fontStyle: "italic", fontSize: '.8em'}}>
-                  <span style={{fontFamily:"Alegreya", fontWeight: 'bold', color: 'blue', fontSize: '1.1em', position: 'relative', top: '-7px'}}> { this.state.commentsView ? 'hide ' : 'show ' } </span>
+                  <span style={{cursor:"pointer", fontFamily:"Alegreya", fontWeight: 'bold', color: 'blue', fontSize: '1.1em', position: 'relative', top: '-7px'}}> { this.state.commentsView ? 'hide ' : 'show ' } </span>
                   <span style={{fontFamily:"Alegreya", position: 'relative', top: '-7px'}}> { commentNumber + ' comments'} </span>
                 </span>
               </div>

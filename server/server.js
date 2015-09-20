@@ -29,8 +29,9 @@ var messageSchema = new Schema({
   userId: String,
   username: String,
   message: String,
-  votes: Number,
-  voters: [], //voters holds an array of userIds to record who has voted on this message.
+  totalVotes: Number,
+  downVotes: [],
+  upVotes: [],
   comments: [], //holds array of comments submitted on each message.
   favorites: [], //holds a list of userIds that have favorited this message.
   latitude: String,
@@ -102,8 +103,9 @@ app.post('/message', function (request, response) {
     userId: request.body.userId, //this should come from the session.
     username: request.body.username,  //this should come from the session.
     message: request.body.message,
-    votes: 0,
-    voters : [], //voters holds an array of userIds to record who has voted on this message.
+    totalVotes: 0,
+    downVotes : [], //voters holds an array of userIds to record who has voted on this message.
+    upVotes: [],
     comments : [], //holds array of comments submitted on each message.
     favorites : [], //holds a list of userIds that have favorited this message.
     latitude: request.body.latitude,
@@ -135,12 +137,32 @@ app.post('/voteComment', function (request,response){
   firebase.voteComment(request, response);
 });
 
-app.post('/favorite', function(request,response){
+app.post('/favorite', function (request,response){
   message.findOne({_id: request.body.messageId}, function (err, targetMessage) {
     targetMessage.favorites = request.body.favorites;
     targetMessage.save(function (err, data) {
       response.send(data);
     })
+  });
+});
+
+app.post('/downVote', function (request,response){
+  message.findOne({_id: request.body.messageId}, function (err, targetMessage) {
+    targetMessage.totalVotes = request.body.totalVotes;
+    targetMessage.downVotes = request.body.downVotes;
+    targetMessage.save(function (err, data) {
+      response.send(data);
+    });
+  });
+});
+
+app.post('/upVote', function (request,response){
+  message.findOne({_id: request.body.messageId}, function (err, targetMessage) {
+    targetMessage.totalVotes = request.body.totalVotes;
+    targetMessage.upVotes = request.body.upVotes;
+    targetMessage.save(function (err, data) {
+      response.send(data);
+    });
   });
 });
 
