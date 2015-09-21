@@ -63,17 +63,6 @@ app.get('/', function (request, response){
   response.redirect('murmur');
 });
 
-app.post('/signup', function (request, response){
-  request.session.username = request.body.username;
-  request.session.password = request.body.password;
-  console.log(request.session.username, request.session.password);
-});
-
-app.post('/login', function (request, response){
-  request.session.username = request.body.username;
-  request.session.password = request.body.password;
-});
-
 //the token needs to be set in order to access firebase.
 //this is a crappy function that should be taken out or replaced by something useful.
 // app.get('/', function(request, response){
@@ -94,7 +83,30 @@ app.post('/login', function (request, response){
 
 var user = mongoose.model('user', userSchema); //this is basically the users collection.
 
+function checkUser(username, password, cb){
+  var clientResponse = '';
+  user.find({username: username, password: password}, function(err, data, cb){
+    if(data.length === 0){
+      clientResponse = 'username or password not found';
+    }
+    else{
+      clientResponse = 'Welcome ' + request.body.username;
+    }
+    cb.bind(this);
+  });
+  return clientResponse;
+}
+
+app.post('/login', function (request, response){
+  var clientResponse = checkUser(request.body.username, request.body.password, function(){});
+  console.log('test')
+  request.session.username = request.body.username;
+  request.session.password = request.body.password;
+  console.log(clientResponse);
+});
+
 app.post('/signup', function (request, response){
+  request.session.username = request.body.username;
   var newUser = new user({
     username: request.body.username, 
     password: request.body.password
@@ -103,6 +115,7 @@ app.post('/signup', function (request, response){
     response.send(data);
   });
 });
+
 
 var message = mongoose.model('message', messageSchema);
 
@@ -191,4 +204,3 @@ app.post('/upVote', function (request,response){
 
 app.listen(port, serverUrl);
 console.log('server listening to:', serverUrl, ':', port);
-

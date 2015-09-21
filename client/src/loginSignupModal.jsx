@@ -70,7 +70,7 @@ var LoginSignupModal = React.createClass({
   userLogin: function(event){
     event.preventDefault();
     console.log("user login button clicked!", this.state.username, this.state.password);
-    window.sessionStorage.username = this.state.username;
+    // window.sessionStorage.username = this.state.username;
 
     $.ajax({
       type: 'POST',
@@ -105,6 +105,7 @@ var LoginSignupModal = React.createClass({
       }
     });
 
+    $('#username').text(window.sessionStorage.username);
     $('#myModal').modal('hide');
   },
 
