@@ -7,6 +7,7 @@ var url = 'http://0.0.0.0:3000/';
 
 module.exports = React.createClass({
   getInitialState: function() {
+    console.log("loading message!");
     return {
       commentBox: 'false'
     }

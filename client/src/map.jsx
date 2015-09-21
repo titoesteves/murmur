@@ -6,6 +6,11 @@ var Message = require('./message.jsx');
 var messages;
 
 module.exports = React.createClass({
+    getInitialState: function() {
+        return {
+            messages:[]
+        };
+    },
     componentDidMount: function(){
         $.ajax({
             type: 'GET',
