@@ -12,7 +12,6 @@ module.exports = React.createClass({
     }
   },
   upVote: function(event){
-
     $.ajax({
       type: 'POST',
       url: url + 'voteComment' ,
@@ -45,15 +44,15 @@ module.exports = React.createClass({
   },
   render: function() {
     return (
-      <div id={ this.props.commentId } key={ this.props.commentId }>
+      <div id={ this.props.commentId }>
         <div className="conatiner" style={{float: 'left', clear: 'both', marginBottom: '5px'}}>
           <div style={ this.styles.commentContainer }>
             <span style={{float: "left"}}>
-              <Face baseId={ this.props.baseId } hairId={ this.props.hairId } key={ this.props.commentId }/>
+              
             </span>
             <span style={{float: "left"}}>
               <p style={{fontFamily: 'Alegreya', color: 'black', fontSize: '1em'}}>
-                { this.props.commentMessage }
+                { this.props.comment }
               </p>
               <span style={{fontFamily: 'Alegreya', fontStyle: "italic", fontSize: '.8em', float: "left"}}>
                 ({ moment(this.props.commentTimestamp).fromNow() })
@@ -63,7 +62,7 @@ module.exports = React.createClass({
         </div>
         <div style={ this.styles.voteContainer }>
           <i className="glyphicon glyphicon-chevron-up" style={{color: "#0000FF"}} onClick={ this.upVote }></i>
-            <span className="count"  style={ this.styles.voteCount }> { this.props.commentVotes } </span>
+            <span className="count"  style={ this.styles.voteCount }> 0 </span>
           <i className="glyphicon glyphicon-chevron-down" style={{color: "#0000FF"}} onClick={ this.downVote }></i>
         </div>
       </div>

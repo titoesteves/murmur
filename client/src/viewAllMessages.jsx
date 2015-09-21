@@ -6,6 +6,7 @@ var url = 'http://0.0.0.0:3000/';
 var ViewAllMessages = React.createClass({
 
   getInitialState: function() {
+    this.getMessages();
     return {
       messages:'' //the messages are initially empty, set later by the call to the messages json file.
     }
@@ -77,7 +78,7 @@ var ViewAllMessages = React.createClass({
 
   render: function() {
 
-    this.getMessages(); //fetch the messages from the db. They get set to messages state to be displayed.
+    //fetch the messages from the db. They get set to messages state to be displayed.
 
     // Push messages from Firebase to messageRows
     

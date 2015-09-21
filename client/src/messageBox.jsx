@@ -2,7 +2,7 @@ var React = require('react/addons');
 var url = 'http://0.0.0.0:3000/';
 
 
-var InputBox = React.createClass({
+var MessageBox = React.createClass({
   mixins: [React.addons.LinkedStateMixin],
   getInitialState: function() {
     return {message: ''};
@@ -22,9 +22,10 @@ var InputBox = React.createClass({
         "latitude": localStorage.latitude,
         "longitude": localStorage.longitude
       }),
-      success: function(d){
-        console.log('POST successful: ', d);
-      }
+      success: function(err, data){
+        console.log(data);
+        
+      }.bind(this)
     });
   },
 
@@ -42,5 +43,5 @@ var InputBox = React.createClass({
   }
 });
 
-module.exports = InputBox;
+module.exports = MessageBox;
 

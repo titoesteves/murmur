@@ -1,7 +1,7 @@
 var React = require('react');
 var ViewAllMessages = require('./viewAllMessages');
 var TopBar = require('./topbar');
-var InputBox = require('./inputbox');
+var InputBox = require('./messageBox');
 var LoginSignupModal = require('./loginSignupModal');
 var Map = require('./map');
 

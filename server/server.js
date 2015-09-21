@@ -25,6 +25,7 @@ var userSchema = new Schema({
   username: String,
   password: String
 });
+
 var messageSchema = new Schema({
   userId: String,
   username: String,
@@ -36,6 +37,14 @@ var messageSchema = new Schema({
   favorites: [], //holds a list of userIds that have favorited this message.
   latitude: String,
   longitude: String,
+  timestamp: {type: Date, default: Date.now}
+});
+
+var commentSchema = new Schema({
+  messageId: String,
+  userId: String,
+  username: String,
+  comment: String,
   timestamp: {type: Date, default: Date.now}
 });
 
@@ -97,7 +106,6 @@ app.post('/signup', function (request, response){
 
 var message = mongoose.model('message', messageSchema);
 
-
 app.post('/message', function (request, response) {
   var newMessage = new message({
     userId: request.body.userId, //this should come from the session.
@@ -106,7 +114,6 @@ app.post('/message', function (request, response) {
     totalVotes: 0,
     downVotes : [], //voters holds an array of userIds to record who has voted on this message.
     upVotes: [],
-    comments : [], //holds array of comments submitted on each message.
     favorites : [], //holds a list of userIds that have favorited this message.
     latitude: request.body.latitude,
     longitude: request.body.longitude
@@ -117,7 +124,6 @@ app.post('/message', function (request, response) {
   });
   // response.send(request.session.username);
 });
-
 //fetch all messages from the server.
 app.get('/message', function (request, response) {
   message.find({}, function (err, messages) {
@@ -125,12 +131,29 @@ app.get('/message', function (request, response) {
   });
 });
 
+
+var comment = mongoose.model('comment', commentSchema); //comment collection.
+
 app.post('/comment', function (request, response){
-  firebase.comment(request, response);
+  console.log("comment submitted!");
+  var newComment = new comment({
+    messageId: request.body.messageId,
+    userId: request.body.userId, //this should come from the session.
+    username: request.body.username,  //this should come from the session.
+    comment: request.body.comment
+  });
+  newComment.save(function (err, data){
+    response.send(data);
+  });
+  // response.send(request.session.username);
 });
 
-app.post('/vote', function (request,response){
-  firebase.votePost(request, response);
+app.post('/comments', function (request, response) {
+  console.log("comments fetched!");
+  comment.find({messageId: request.body.messageId}, function (err, comments) {
+    console.log(JSON.stringify(comments));
+    response.send(JSON.stringify(comments));
+  });
 });
 
 app.post('/voteComment', function (request,response){

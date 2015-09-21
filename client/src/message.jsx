@@ -1,20 +1,62 @@
 var React = require('react');
 var moment = require('moment');
 var CommentBox = require('./commentBox');
-var CommentMessage = require('./commentMessage');
+var Comment = require('./comment');
 
 var url = 'http://0.0.0.0:3000/';
 
 var Message = React.createClass({
 
   getInitialState: function() {
+    this.loadComments();
     return {
-      commentsView: false
+      commentsView: false,
+      commentRows: []
     };
   },
 
-  toggleCommentsView: function(){
-    this.setState({ commentsView: !this.state.commentsView })
+  commentsUpdate: function(newComment) {
+    console.log("comments updated");
+    var newMessageRows = this.state.commentRows.push(
+      <Comment
+        commentId={ newComment._id }
+        messageId={ newComment.messageId }
+        comment={ newComment.comment }
+        commentVotes={ 0 }
+        commentTimestamp={ newComment.timestamp } />
+    );
+    this.setState({messageRows: newMessageRows})
+  },
+
+  toggleComments: function() {
+    console.log("toggling comments!")
+    this.setState({ commentsView: !this.state.commentsView });
+  },
+
+  loadComments: function(){
+    var commentRows = [];
+    $.ajax({
+      type: 'POST',
+      data: JSON.stringify({
+        "messageId": this.props.messageId,
+      }),
+      url: url+'comments',
+      contentType: 'application/json',
+      success: function(comments) {
+        var comments = JSON.parse(comments);
+        for (var i=0; i<comments.length; i++){
+          commentRows.push(
+            <Comment
+              commentId={ comments[i]._id }
+              messageId={ comments[i].messageId }
+              comment={ comments[i].comment }
+              commentVotes={ 0 }
+              commentTimestamp={ comments[i].timestamp } />
+          );
+        }
+        this.setState({ commentRows: commentRows });
+      }.bind(this)
+    });
   },
 
   // Post upvote data to Server
@@ -140,16 +182,16 @@ var Message = React.createClass({
       }
     }
 
-    var commentRowsSortedOptions = {
-      recent: commentRows.slice().sort(function(a,b){
-        return b.props.commentTimestamp - a.props.commentTimestamp;
-      }),
-      popular: commentRows.slice().sort(function(a,b){
-        return b.props.commentVotes - a.props.commentVotes;
-      }),
-    }
+    // var commentRowsSortedOptions = {
+    //   recent: commentRows.slice().sort(function(a,b){
+    //     return b.props.commentTimestamp - a.props.commentTimestamp;
+    //   }),
+    //   popular: commentRows.slice().sort(function(a,b){
+    //     return b.props.commentVotes - a.props.commentVotes;
+    //   }),
+    // }
 
-    var commentNumber = this.props.comments.length;
+    // var commentNumber = this.props.comments.length;
                     // 119{ commentNumber } comments
 
     var styleFavorites =
@@ -173,7 +215,7 @@ var Message = React.createClass({
         }
 
     return (
-      <div className="jumbotron" id={ this.props.messageId } style={{ borderRadius: '40px', paddingLeft: '0', paddingRight: '0', paddingTop: '15px', paddingBottom: '7px', backgroundColor: '#ECF0F5'}} >
+      <div className="jumbotron" id= {this.props.messageId}  style={{ borderRadius: '40px', paddingLeft: '0', paddingRight: '0', paddingTop: '15px', paddingBottom: '7px', backgroundColor: '#ECF0F5'}} >
         <div className="container">
           <div className="col-xs-10" style={{ marginBottom: '20px', paddingLeft:'10px', marginBottom: '0'}}>
             <p style={{fontFamily: 'Alegreya', color: 'chocolate', marginLeft: "10px", marginBottom: '0'}}>
@@ -201,22 +243,20 @@ var Message = React.createClass({
               </span>
             </div>
             <div style={ this.styles.comments }>
-              <div className="commentViewToggle" onClick={ this.toggleCommentsView }>
+              <div className="commentViewToggle" onClick={ this.toggleComments } style={{cursor:"pointer"}}>
                 <i className="glyphicon glyphicon-comment" style={ this.styles.iconStyle }></i>
                 <span style={{fontStyle: "italic", fontSize: '.8em'}}>
-                  <span style={{cursor:"pointer", fontFamily:"Alegreya", fontWeight: 'bold', color: 'blue', fontSize: '1.1em', position: 'relative', top: '-7px'}}> { this.state.commentsView ? 'hide ' : 'show ' } </span>
-                  <span style={{fontFamily:"Alegreya", position: 'relative', top: '-7px'}}> { commentNumber + ' comments'} </span>
+                  <span style={{fontFamily:"Alegreya", fontWeight: 'bold', color: 'blue', fontSize: '1.1em', position: 'relative', top: '-7px'}}> { this.state.commentsView ? 'hide ' : 'show ' } </span>
+                  <span style={{fontFamily:"Alegreya", position: 'relative', top: '-7px'}}> { this.state.commentRows.length + ' comments'} </span>
                 </span>
               </div>
             </div>
           </div>
 
           <div style={ this.state.commentsView ? this.styles.commentsView : this.styles.hidden }>
-            <CommentBox messageId={ this.props.messageId } token={ this.props.token } auth={ this.props.auth }/>
-            { commentRowsSortedOptions['recent'] }
+            <CommentBox messageId={ this.props.messageId } commentsUpdate={this.commentsUpdate} comments={ 0 } />
+            { this.state.commentRows }
           </div>
-
-
         </div>
       </div>
     )
