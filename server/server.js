@@ -85,24 +85,23 @@ var user = mongoose.model('user', userSchema); //this is basically the users col
 
 function checkUser(username, password, cb){
   var clientResponse = '';
-  user.find({username: username, password: password}, function(err, data, cb){
+  user.find({username: username, password: password}, function(err, data){
     if(data.length === 0){
       clientResponse = 'username or password not found';
     }
     else{
-      clientResponse = 'Welcome ' + request.body.username;
+      clientResponse = 'Welcome ' + username;
     }
-    cb.bind(this);
+  cb(clientResponse);
   });
-  return clientResponse;
 }
 
 app.post('/login', function (request, response){
-  var clientResponse = checkUser(request.body.username, request.body.password, function(){});
-  console.log('test')
+  checkUser(request.body.username, request.body.password, function(clientResponse){
+    response.send(clientResponse);
+  });
   request.session.username = request.body.username;
   request.session.password = request.body.password;
-  console.log(clientResponse);
 });
 
 app.post('/signup', function (request, response){

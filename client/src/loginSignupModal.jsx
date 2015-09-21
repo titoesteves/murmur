@@ -70,7 +70,7 @@ var LoginSignupModal = React.createClass({
   userLogin: function(event){
     event.preventDefault();
     console.log("user login button clicked!", this.state.username, this.state.password);
-    // window.sessionStorage.username = this.state.username;
+    window.sessionStorage.username = this.state.username;
 
     $.ajax({
       type: 'POST',
@@ -81,9 +81,19 @@ var LoginSignupModal = React.createClass({
         'password': this.state.password
       }),
       success: function(data){
-        console.log('Post successful', data);
+        console.log(data)
+        if(data.indexOf('Welcome') === -1){
+          console.log('entered')
+          $('#username').text('Anonymous');
+          // console.log(window.sessionStorage.username)
+        }
+        else{
+          $('#username').text(window.sessionStorage.username);
+        }
       }
     });
+    
+    // console.log(window.sessionStorage.username);
     $('#myModal').modal('hide');
   },
 
