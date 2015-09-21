@@ -1,7 +1,6 @@
 var React = require('react/addons');
 var url = 'http://0.0.0.0:3000/';
 
-
 var MessageBox = React.createClass({
   mixins: [React.addons.LinkedStateMixin],
   getInitialState: function() {

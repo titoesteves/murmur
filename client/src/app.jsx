@@ -64,7 +64,9 @@ var mainView = React.createClass({
               upVotes={ message.upVotes }
               favorites={ message.favorites }
               timestamp={ message.timestamp }
-              messagesUpdate={ this.messagesUpdate } />
+              messagesUpdate={ this.messagesUpdate }
+              latitude={ message.latitude }
+              longitude={ message.longitude } />
           );
         }
         // this.setState({messages: "easy"});
@@ -178,7 +180,7 @@ var mainView = React.createClass({
         <LoginSignupModal/>
         <div>
           <div style={this.styles.filter}>
-            <Map />
+            <Map messages={this.state.messages}/>
             <div className="btn-group" style={{display: 'inline-block', right: '300px'}}>
               <button className="btn btn-default" style={{fontFamily: 'Roboto'}} onClick={ this.handleSortRecent }> New </button>
               <button className="btn btn-default" style={{fontFamily: 'Roboto'}} onClick={ this.handleSortPopular }> Hot </button>
