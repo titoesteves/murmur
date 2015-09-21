@@ -106,6 +106,7 @@ function checkUser(username, password, request, response, cb){
     else if(data.length === 0 && request.url === '/login'){
       clientResponse = 'Username or password not found. Please signup';
     }
+  console.log("userData", data);
   cb(clientResponse, data);
   });
 }
@@ -122,13 +123,6 @@ app.post('/signup', function (request, response){
   checkUser(request.body.username, request.body.password, request, response, function(clientResponse, data){
     response.send(clientResponse, data);
   });
-  // var newUser = new user({
-  //   username: request.body.username, 
-  //   password: request.body.password
-  // });
-  // newUser.save(function(err, data){
-  //   response.send(data);
-  // });
 });
 
 

@@ -104,7 +104,9 @@ var LoginSignupModal = React.createClass({
 
   newSignup: function(event){
     event.preventDefault();
+    //window.sessionStorage.username = this.state.username;
     console.log("button clicked!", this.state.username, this.state.password);
+
 
     $.ajax({
       type: 'POST',
@@ -116,22 +118,26 @@ var LoginSignupModal = React.createClass({
       }),
       success: function(data, response) {
         if(data.indexOf('login') > 0){
+          console.log("in db");
           $('#username').text('Anonymous');
           window.sessionStorage.username = 'Anonymous';
-          window.sessionStorage.username = response.username;
+          // window.sessionStorage.username = response.username;
           window.sessionStorage.userId = 1;
           window.sessionStorage.hairId = 1;
           window.sessionStorage.faceId = 1;
           $('#usernameSignup').val('');
           $('#passwordSignup').val('');
         }
-        else{
-          $('#username').text(window.sessionStorage.username);
-          $('#myModal').modal('hide');
+        else {
+          console.log("not in db");
+          console.log(response.username);
           window.sessionStorage.username = response.username;
           window.sessionStorage.userId = response._id;
           window.sessionStorage.hairId = response.hairId;
           window.sessionStorage.faceId = response.faceId;
+          $('#username').text(window.sessionStorage.username);
+          $('#myModal').modal('hide');
+          
         }
       }
     });
