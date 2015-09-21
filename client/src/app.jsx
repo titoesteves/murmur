@@ -18,7 +18,9 @@ var url = 'http://0.0.0.0:3000/';
 //   return cookies;
 // }
 
+// bind nonsensitive info to sessionStorage for easy use amongst files
 window.sessionStorage.userId = "Dylan";
+window.sessionStorage.username = window.sessionStorage.username || 'Anonymous';
 
 // var cookies = getCookies();
 // var token = document.token = cookies.token;
