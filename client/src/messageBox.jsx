@@ -18,6 +18,8 @@ var MessageBox = React.createClass({
         //maybe the userId and username are set on the server side..
         "userId": window.sessionStorage.userId, //this needs to be set by the session.
         "username": window.sessionStorage.username, //this needs to be set by the session.
+        "hairId": window.sessionStorage.hairId,
+        "faceId": window.sessionStorage.faceId,
         "message": this.state.message,
         "latitude": localStorage.latitude,
         "longitude": localStorage.longitude

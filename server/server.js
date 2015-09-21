@@ -23,7 +23,9 @@ db.once('open', function callback () {
 var Schema = mongoose.Schema;
 var userSchema = new Schema({
   username: String,
-  password: String
+  password: String,
+  hairId: String,
+  faceId: String
 });
 
 var messageSchema = new Schema({
@@ -37,6 +39,8 @@ var messageSchema = new Schema({
   favorites: [], //holds a list of userIds that have favorited this message.
   latitude: String,
   longitude: String,
+  hairId: String,
+  faceId: String,
   timestamp: {type: Date, default: Date.now}
 });
 
@@ -89,7 +93,9 @@ function checkUser(username, password, request, response, cb){
     if(data.length === 0 && request.url === '/signup'){
       var newUser = new user({
         username: username, 
-        password: password
+        password: password,
+        hairId: Math.floor(Math.random()*98)+1,
+        faceId: Math.floor(Math.random()*17)+1
       });
       newUser.save(function(err, data){
       });
@@ -100,21 +106,21 @@ function checkUser(username, password, request, response, cb){
     else if(data.length === 0 && request.url === '/login'){
       clientResponse = 'Username or password not found. Please signup';
     }
-  cb(clientResponse);
+  cb(clientResponse, data);
   });
 }
 
 app.post('/login', function (request, response){
-  checkUser(request.body.username, request.body.password, request, response, function(clientResponse){
-    response.send(clientResponse);
+  checkUser(request.body.username, request.body.password, request, response, function(clientResponse, data){
+    response.send(clientResponse, data);
   });
 });
 
 app.post('/signup', function (request, response){
   // request.session.username = request.body.username;
   
-  checkUser(request.body.username, request.body.password, request, response, function(clientResponse){
-    response.send(clientResponse);
+  checkUser(request.body.username, request.body.password, request, response, function(clientResponse, data){
+    response.send(clientResponse, data);
   });
   // var newUser = new user({
   //   username: request.body.username, 
@@ -138,7 +144,9 @@ app.post('/message', function (request, response) {
     upVotes: [],
     favorites : [], //holds a list of userIds that have favorited this message.
     latitude: request.body.latitude,
-    longitude: request.body.longitude
+    longitude: request.body.longitude,
+    hairId: request.body.hairId,
+    faceId: request.body.faceId
   });
   newMessage.save(function (err, data){
     console.log("new message", data);

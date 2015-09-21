@@ -80,16 +80,23 @@ var LoginSignupModal = React.createClass({
         'username': this.state.username,
         'password': this.state.password
       }),
-      success: function(data){
+      success: function(data, response){
         if(data.indexOf('Welcome') !== 0){
           $('#username').text('Anonymous');
           window.sessionStorage.username = 'Anonymous';
+          window.sessionStorage.userId = 1;
+          window.sessionStorage.hairId = 1;
+          window.sessionStorage.faceId = 1;
           $('#usernameLogin').val('');
           $('#passwordLogin').val('');
         }
         else{
           $('#username').text(window.sessionStorage.username);
           $('#myModal').modal('hide');
+          window.sessionStorage.username = response.username;
+          window.sessionStorage.userId = response._id;
+          window.sessionStorage.hairId = response.hairId;
+          window.sessionStorage.faceId = response.faceId;
         }
       }
     });
@@ -98,7 +105,6 @@ var LoginSignupModal = React.createClass({
   newSignup: function(event){
     event.preventDefault();
     console.log("button clicked!", this.state.username, this.state.password);
-    window.sessionStorage.username = this.state.username;
 
     $.ajax({
       type: 'POST',
@@ -108,16 +114,24 @@ var LoginSignupModal = React.createClass({
         "username": this.state.username,
         "password": this.state.password
       }),
-      success: function(data) {
+      success: function(data, response) {
         if(data.indexOf('login') > 0){
           $('#username').text('Anonymous');
           window.sessionStorage.username = 'Anonymous';
+          window.sessionStorage.username = response.username;
+          window.sessionStorage.userId = 1;
+          window.sessionStorage.hairId = 1;
+          window.sessionStorage.faceId = 1;
           $('#usernameSignup').val('');
           $('#passwordSignup').val('');
         }
         else{
           $('#username').text(window.sessionStorage.username);
           $('#myModal').modal('hide');
+          window.sessionStorage.username = response.username;
+          window.sessionStorage.userId = response._id;
+          window.sessionStorage.hairId = response.hairId;
+          window.sessionStorage.faceId = response.faceId;
         }
       }
     });
