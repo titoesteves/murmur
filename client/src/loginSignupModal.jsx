@@ -81,20 +81,18 @@ var LoginSignupModal = React.createClass({
         'password': this.state.password
       }),
       success: function(data){
-        console.log(data)
-        if(data.indexOf('Welcome') === -1){
-          console.log('entered')
+        if(data.indexOf('Welcome') !== 0){
           $('#username').text('Anonymous');
-          // console.log(window.sessionStorage.username)
+          window.sessionStorage.username = 'Anonymous';
+          $('#usernameLogin').val('');
+          $('#passwordLogin').val('');
         }
         else{
           $('#username').text(window.sessionStorage.username);
+          $('#myModal').modal('hide');
         }
       }
     });
-    
-    // console.log(window.sessionStorage.username);
-    $('#myModal').modal('hide');
   },
 
   newSignup: function(event){
@@ -111,12 +109,19 @@ var LoginSignupModal = React.createClass({
         "password": this.state.password
       }),
       success: function(data) {
-        console.log('Post Successful', data);
+        if(data.indexOf('login') > 0){
+          $('#username').text('Anonymous');
+          window.sessionStorage.username = 'Anonymous';
+          $('#usernameSignup').val('');
+          $('#passwordSignup').val('');
+        }
+        else{
+          $('#username').text(window.sessionStorage.username);
+          $('#myModal').modal('hide');
+        }
       }
     });
 
-    $('#username').text(window.sessionStorage.username);
-    $('#myModal').modal('hide');
   },
 
   handleUsername: function(event){
@@ -143,8 +148,8 @@ var LoginSignupModal = React.createClass({
             </div>
             <div className="modal-body">
               <form>
-                <input placeholder="Username" type="text" onChange={this.handleUsername}/>
-                <input placeholder="Password" type="text" onChange={this.handlePassword}/>
+                <input id='usernameLogin' placeholder="Username" type="text" onChange={this.handleUsername}/>
+                <input id='passwordLogin' placeholder="Password" type="text" onChange={this.handlePassword}/>
                 <button onClick={this.userLogin}>Login!</button>
               </form>
             </div>
@@ -153,8 +158,8 @@ var LoginSignupModal = React.createClass({
             </div>
             <div className="modal-body">
               <form>
-                <input placeholder="Username" type="text" onChange={this.handleUsername}></input>
-                <input placeholder="Password" type="text" onChange={this.handlePassword}></input>
+                <input id='usernameSignup' placeholder="Username" type="text" onChange={this.handleUsername}></input>
+                <input id='passwordSignup' placeholder="Password" type="text" onChange={this.handlePassword}></input>
                 <button onClick={this.newSignup}>Signup!</button>
               </form>
             </div>
