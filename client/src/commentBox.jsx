@@ -11,6 +11,7 @@ var commentBox = React.createClass({
 
   handleSubmit: function(event) {
     event.preventDefault(); //prevent the form from actually submitting.
+    this.setState({comment: ''});
     console.log("comment submitted!", this.props.messageId);
     $.ajax({
       type: 'POST',
