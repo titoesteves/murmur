@@ -13,7 +13,10 @@ var Message = React.createClass({
     return {
       commentsView: false,
       commentRows: [],
-      favorites: this.props.favorites
+      favorites: this.props.favorites,
+      totalVotes: this.props.totalVotes,
+      upVotes: this.props.upVotes,
+      downVotes: this.props.downVotes
     };
   },
 
@@ -65,8 +68,8 @@ var Message = React.createClass({
   // Post upvote data to Server
   upVoteToggle: function(){
     console.log("togged upVote!");
-    var upVotes = this.props.upVotes; //favorites is a object of objects with userIds as keys and true/false as values.    
-    var totalVotes = this.props.totalVotes;
+    var upVotes = this.state.upVotes;  
+    var totalVotes = this.state.totalVotes;
     var voteLoc = upVotes.indexOf(window.sessionStorage.userId);
     if (voteLoc !== -1){
       upVotes.splice(voteLoc, 1);
@@ -76,11 +79,13 @@ var Message = React.createClass({
       upVotes.push(window.sessionStorage.userId);
       var newTotal = totalVotes + 1;
     }
-    if (this.props.upVotes.indexOf(window.sessionStorage.userId) !== -1) {
-      // this.upVoteToggle();
-    }
+    // if (this.state.upVotes.indexOf(window.sessionStorage.userId) !== -1) {
+    //   // this.upVoteToggle();
+    // }
     console.log("newTotal", newTotal);
     console.log("upVotes", upVotes);
+    this.setState({totalVotes: newTotal})
+    this.setState({upVotes: upVotes});
 
     $.ajax({
       type: 'POST',
@@ -99,8 +104,8 @@ var Message = React.createClass({
   // Post downvote data to Server
   downVoteToggle: function(){
     console.log("togged downvote!");
-    var downVotes = this.props.downVotes; //favorites is a object of objects with userIds as keys and true/false as values.    
-    var totalVotes = this.props.totalVotes;
+    var downVotes = this.state.downVotes; //favorites is a object of objects with userIds as keys and true/false as values.    
+    var totalVotes = this.state.totalVotes;
     var voteLoc = downVotes.indexOf(window.sessionStorage.userId);
     if (voteLoc !== -1){
       downVotes.splice(voteLoc, 1);
@@ -115,6 +120,8 @@ var Message = React.createClass({
     }
     console.log("newTotal", newTotal);
     console.log("downVotes", downVotes);
+    this.setState({totalVotes: newTotal});
+    this.setState({downVotes: downVotes})
 
     $.ajax({
       type: 'POST',
@@ -216,7 +223,7 @@ var Message = React.createClass({
         }
 
     return (
-      <div className="jumbotron" id= {this.props.messageId}  style={{ borderRadius: '40px', paddingLeft: '0', paddingRight: '0', paddingTop: '15px', paddingBottom: '7px', backgroundColor: '#ECF0F5'}} >
+      <div className="jumbotron" id= {this.props.messageId} key={this.props.messageId}  style={{ borderRadius: '40px', paddingLeft: '0', paddingRight: '0', paddingTop: '15px', paddingBottom: '7px', backgroundColor: '#ECF0F5'}} >
         <div className="container">
           <div className="col-xs-10" style={{ marginBottom: '20px', paddingLeft:'10px', marginBottom: '0'}}>
             <p style={{fontFamily: 'Alegreya', color: 'chocolate', marginLeft: "10px", marginBottom: '0'}}>
@@ -226,7 +233,7 @@ var Message = React.createClass({
           <div className="votes col-xs-2" style={ this.styles.votes }>
             <div style={ this.styles.voteContainer }>
               <i className="glyphicon glyphicon-chevron-up" style={{color: "#0000FF", cursor:"pointer"}} onClick={ this.upVoteToggle }></i>
-              <span className="count" style={{fontFamily: 'Alegreya'}}> { this.props.totalVotes } </span>
+              <span className="count" style={{fontFamily: 'Alegreya'}}> { this.state.totalVotes } </span>
               <i className="glyphicon glyphicon-chevron-down" style={{color: "#0000FF", cursor:"pointer"}} onClick={ this.downVoteToggle }></i>
             </div>
           </div>

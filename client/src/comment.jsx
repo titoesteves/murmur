@@ -44,7 +44,7 @@ module.exports = React.createClass({
   },
   render: function() {
     return (
-      <div id={ this.props.commentId }>
+      <div id={ this.props.commentId } key={this.props.commentId} >
         <div className="conatiner" style={{float: 'left', clear: 'both', marginBottom: '5px'}}>
           <div style={ this.styles.commentContainer }>
             <span style={{float: "left"}}>
