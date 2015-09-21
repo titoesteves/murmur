@@ -83,36 +83,46 @@ app.get('/', function (request, response){
 
 var user = mongoose.model('user', userSchema); //this is basically the users collection.
 
-function checkUser(username, password, cb){
-  var clientResponse = '';
+function checkUser(username, password, request, response, cb){
+  var clientResponse = 'Welcome ' + username;
   user.find({username: username, password: password}, function(err, data){
-    if(data.length === 0){
-      clientResponse = 'username or password not found';
+    if(data.length === 0 && request.url === '/signup'){
+      var newUser = new user({
+        username: username, 
+        password: password
+      });
+      newUser.save(function(err, data){
+      });
     }
-    else{
-      clientResponse = 'Welcome ' + username;
+    else if(data.length !== 0 && request.url === '/signup'){
+      clientResponse = 'Username found, please login';
+    }
+    else if(data.length === 0 && request.url === '/login'){
+      clientResponse = 'Username or password not found. Please signup';
     }
   cb(clientResponse);
   });
 }
 
 app.post('/login', function (request, response){
-  checkUser(request.body.username, request.body.password, function(clientResponse){
+  checkUser(request.body.username, request.body.password, request, response, function(clientResponse){
     response.send(clientResponse);
   });
-  request.session.username = request.body.username;
-  request.session.password = request.body.password;
 });
 
 app.post('/signup', function (request, response){
-  request.session.username = request.body.username;
-  var newUser = new user({
-    username: request.body.username, 
-    password: request.body.password
+  // request.session.username = request.body.username;
+  
+  checkUser(request.body.username, request.body.password, request, response, function(clientResponse){
+    response.send(clientResponse);
   });
-  newUser.save(function(err, data){
-    response.send(data);
-  });
+  // var newUser = new user({
+  //   username: request.body.username, 
+  //   password: request.body.password
+  // });
+  // newUser.save(function(err, data){
+  //   response.send(data);
+  // });
 });
 
 
