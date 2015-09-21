@@ -55,6 +55,7 @@ var mainView = React.createClass({
           // hairId={ message.hairId}
           messageRows.push(
             <Message
+              userId={ message.userId }
               messageId={ message._id }
               message={ message.message }
               comments={ message.comments }
@@ -151,37 +152,25 @@ var mainView = React.createClass({
             return message;
           }
         });
-        for (var i=0; i<filtered.length; i++){
-          console.log(filtered[i].props)
-        }
-        console.log(filtered);
+        return filtered;
+      }.bind(this),
+      myPosts: function() {
+        console.log(window.sessionStorage.userId);
+        var messages = this.state.messages.slice();
+        console.log(messages);
+        var filtered = messages.filter(function(message){
+          console.log(message.props.userId);
+          if(window.sessionStorage.userId === message.props.userId){
+            return message;
+          }
+        });
         return filtered;
       }.bind(this)
     };
 
-    // myPosts: messageRows.filter(function(message){
-    //   if(this.props.sessions[this.props.auth.uid] && this.props.sessions[this.props.auth.uid].posted){
-    //     return this.props.sessions[this.props.auth.uid].posted.hasOwnProperty(message.props.messageId);
-    //   }
-    //   return false;
-    // }.bind(this))
-      //favorites will be much easier once we have usernames.
-      // favorites: messageRows.filter(function(message){
-      //   if(this.props.sessions[this.props.auth.uid] && this.props.sessions[this.props.auth.uid].favorites){
-      //     return this.props.sessions[this.props.auth.uid].favorites.hasOwnProperty(message.props.messageId);
-      //   }
-      //   return false;
-      // }.bind(this)).sort(function(a,b){ // not sorting correctly - FIX
-      //   return b.props.timestamp - a.props.timestamp;
-      // })
 
-      // myPosts will be much easier once we have user names.
-      // myPosts: messageRows.filter(function(message){
-      //   if(this.props.sessions[this.props.auth.uid] && this.props.sessions[this.props.auth.uid].posted){
-      //     return this.props.sessions[this.props.auth.uid].posted.hasOwnProperty(message.props.messageId);
-      //   }
-      //   return false;
-      // }.bind(this)),
+
+      
 
     return (
       <div>
