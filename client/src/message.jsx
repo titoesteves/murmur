@@ -120,7 +120,6 @@ var Message = React.createClass({
   },
 
   render: function() {
-    console.log(this.props.timestamp);
     var commentRows = [];
     if(this.props.comments.length !== 0){
       for(commentKey in this.props.comments){
