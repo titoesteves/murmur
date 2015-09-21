@@ -16,7 +16,7 @@ var InputBox = React.createClass({
       contentType: 'application/json',
       data: JSON.stringify({
         //maybe the userId and username are set on the server side..
-        "userId": "SDFSDFSDFSDF34234", //this needs to be set by the session.
+        "userId": window.sessionStorage.userId, //this needs to be set by the session.
         "username": window.sessionStorage.username, //this needs to be set by the session.
         "message": this.state.message,
         "latitude": localStorage.latitude,
