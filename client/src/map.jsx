@@ -3,36 +3,6 @@ var url = 'http://0.0.0.0:3000/';
 var Message = require('./message.jsx');
 
 module.exports = React.createClass({
-    getInitialState: function() {
-        return {
-            messages:[]
-        };
-    },
-    componentDidMount: function(){
-        $.ajax({
-            type: 'GET',
-            url: url + 'message',
-            contentType: 'application/json',
-            success: function(messages){
-                var messages = JSON.parse(messages);
-                var messageRows = [];
-                for(var i=0; i<messages.length; i++) {
-                  var message = messages[i];
-                  //this is utilizing the message component and setting message properties for use in the message view.
-                  // baseId={ message.baseId}
-                  // hairId={ message.hairId}
-                  messageRows.push(
-                    <Message
-                      message={ message.message } 
-                      latitude={ message.latitude }
-                      longitude={ message.longitude } />
-                  );
-                }
-                // this.setState({messages: "easy"});
-                this.setState({messages:messageRows});
-            }.bind(this)
-        });
-    },
     showMap: function(position){
         localStorage.setItem('latitude', position.coords.latitude);
         localStorage.setItem('longitude', position.coords.longitude);

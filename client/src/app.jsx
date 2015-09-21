@@ -64,7 +64,7 @@ var mainView = React.createClass({
               upVotes={ message.upVotes }
               favorites={ message.favorites }
               timestamp={ message.timestamp }
-              messagesUpdate={ this.messagesUpdate } />
+              messagesUpdate={ this.messagesUpdate }
               latitude={ message.latitude }
               longitude={ message.longitude } />
           );
