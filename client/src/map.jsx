@@ -37,30 +37,25 @@ module.exports = React.createClass({
         var iconBase = 'https://maps.google.com/mapfiles/kml/shapes/'; 
         var mapOptions = {
                 center: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
-                zoom: 12
+                zoom: 20
             },
             map = new google.maps.Map(this.getDOMNode(), mapOptions);
 
-        // var marker = new google.maps.Marker({
-        //     position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude), 
-        //     map: map, 
-        //     title: "Where you're at", 
-        //     icon: new google.maps.MarkerImage(iconBase + 'man.png', null, null, null, new google.maps.Size(40, 40)) 
-        // });
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude), 
+            map: map, 
+            title: "Where you're at", 
+            icon: new google.maps.MarkerImage(iconBase + 'man.png', null, null, null, new google.maps.Size(40, 40)) 
+        });
 
-        // var infowindow = new google.maps.InfoWindow({
-        //     content: message
-        // });
-        // marker.addListener('click', function(){
-        //     map.setZoom(18);
-        //     map.setCenter(marker.getPosition());
-        // });
-        // marker.addListener('mouseover', function(){
-        //     infowindow.open(map, marker);
-        // });
-        // marker.addListener('mouseout', function(){
-        //     infowindow.close(map, marker);
-        // });
+        marker.addListener('click', function(){
+            map.setZoom(30);
+            map.setCenter(marker.getPosition());
+        });
+        map.addListener('click', function(){
+            map.setZoom(20);
+            map.setCenter(marker.getPosition());
+        });
 
         function addInfoWindow(marker, message) {
             var infoWindow = new google.maps.InfoWindow({
@@ -75,22 +70,12 @@ module.exports = React.createClass({
         }
 
         for(var i = 0; i < this.state.messages.length; i++){
-            if(this.state.messages[i]._store.props.latitude === position.coords.latitude  && this.state.messages[i]._store.props.longitude === position.coords.longitude){
-                var Newmarker = new google.maps.Marker({       
-                    position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude), 
-                    map: map,
-                    icon: new google.maps.MarkerImage(iconBase + 'man.png', null, null, null, new google.maps.Size(40, 40))     
-                }); 
-                addInfoWindow(Newmarker, this.state.messages[i]._store.props.message);
-            }
-            else{
-                var Newmarker = new google.maps.Marker({       
-                    position: new google.maps.LatLng(this.state.messages[i]._store.props.latitude, this.state.messages[i]._store.props.longitude), 
-                    map: map,
-                    icon: new google.maps.MarkerImage("http://icons.iconarchive.com/icons/custom-icon-design/mono-general-1/512/chat-icon.png", null, null, null, new google.maps.Size(40, 40))     
-                }); 
-                addInfoWindow(Newmarker, this.state.messages[i]._store.props.message);
-            }
+            var Newmarker = new google.maps.Marker({       
+                position: new google.maps.LatLng(this.state.messages[i]._store.props.latitude, this.state.messages[i]._store.props.longitude), 
+                map: map,
+                icon: new google.maps.MarkerImage("http://icons.iconarchive.com/icons/custom-icon-design/mono-general-1/512/chat-icon.png", null, null, null, new google.maps.Size(40, 40))     
+            }); 
+            addInfoWindow(Newmarker, this.state.messages[i]._store.props.message);
         }
 
     },
