@@ -8,8 +8,10 @@ var url = 'http://0.0.0.0:3000/';
 var Message = React.createClass({
 
   getInitialState: function() {
+    console.log("creating message!");
+
     this.loadComments();
-    console.log("messageFavs", this.props.favorites);
+    console.log("totalVotes", this.props.totalVotes, this.props.message);
     return {
       commentsView: false,
       commentRows: [],
@@ -29,12 +31,10 @@ var Message = React.createClass({
         comment={ newComment.comment }
         timestamp={ newComment.timestamp } />
     );
-    console.log("comments updated", this.state.commentRows);
     this.setState({commentRows: this.state.commentRows})
   },
 
   toggleComments: function() {
-    console.log("toggling comments!")
     this.setState({ commentsView: !this.state.commentsView });
   },
 
@@ -66,7 +66,6 @@ var Message = React.createClass({
 
   // Post upvote data to Server
   upVoteToggle: function(){
-    console.log("togged upVote!");
     var upVotes = this.state.upVotes;  
     var totalVotes = this.state.totalVotes;
     var voteLoc = upVotes.indexOf(window.sessionStorage.userId);
@@ -81,8 +80,6 @@ var Message = React.createClass({
     // if (this.state.upVotes.indexOf(window.sessionStorage.userId) !== -1) {
     //   // this.upVoteToggle();
     // }
-    console.log("newTotal", newTotal);
-    console.log("upVotes", upVotes);
     this.setState({totalVotes: newTotal})
     this.setState({upVotes: upVotes});
 
@@ -102,7 +99,6 @@ var Message = React.createClass({
 
   // Post downvote data to Server
   downVoteToggle: function(){
-    console.log("togged downvote!");
     var downVotes = this.state.downVotes; //favorites is a object of objects with userIds as keys and true/false as values.    
     var totalVotes = this.state.totalVotes;
     var voteLoc = downVotes.indexOf(window.sessionStorage.userId);
@@ -117,8 +113,6 @@ var Message = React.createClass({
     if (this.props.upVotes.indexOf(window.sessionStorage.userId) !== -1) {
       // this.upVoteToggle();
     }
-    console.log("newTotal", newTotal);
-    console.log("downVotes", downVotes);
     this.setState({totalVotes: newTotal});
     this.setState({downVotes: downVotes})
 
@@ -137,7 +131,6 @@ var Message = React.createClass({
   },
 
   toggleFavorite: function(event){
-    console.log("togged fav!");
     var favs = this.state.favorites.slice(); //favorites is a object of objects with userIds as keys and true/false as values.    
     var favLocation = favs.indexOf(window.sessionStorage.userId);
     if (favLocation !== -1){
@@ -145,7 +138,6 @@ var Message = React.createClass({
     }
     else {
       favs.push(window.sessionStorage.userId);
-      console.log(favs);
     }
     $.ajax({
       type: 'POST',
@@ -157,7 +149,6 @@ var Message = React.createClass({
       }),
       success: function(data, err){
         this.setState({favorites: favs})
-        console.log("favs updated!", favs);
       }.bind(this)
 
     });
@@ -195,11 +186,9 @@ var Message = React.createClass({
 
     var commentRowsSortedOptions = {
       recent: this.state.commentRows.sort(function(a,b){
-        console.log(b.props.timestamp, a.props.timestamp);
         return a.props.timestamp > b.props.timestamp ? -1 : 1;
       })
     };
-    console.log(commentRowsSortedOptions);
 
     var styleFavorites =
       // check if the 'uid' favorited the message

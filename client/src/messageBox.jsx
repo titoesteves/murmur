@@ -5,7 +5,9 @@ var url = 'http://0.0.0.0:3000/';
 var MessageBox = React.createClass({
   mixins: [React.addons.LinkedStateMixin],
   getInitialState: function() {
+    console.log("creating message!");
     return {message: ''};
+
   },
   handleSubmit: function(event) {
     event.preventDefault(); //prevent the form from actually submitting.
@@ -23,7 +25,7 @@ var MessageBox = React.createClass({
         "longitude": localStorage.longitude
       }),
       success: function(data, err){
-        console.log(data);
+        console.log("newMessageData", data);
         this.props.messagesUpdate(data);
       }.bind(this)
     });

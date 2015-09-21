@@ -8,7 +8,7 @@ var url = 'http://0.0.0.0:3000/';
 module.exports = React.createClass({
   getInitialState: function() {
     return {
-      commentBox: 'false',
+      commentBox: 'false'
     }
   },
   render: function() {

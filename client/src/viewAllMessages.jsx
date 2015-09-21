@@ -56,39 +56,7 @@ var ViewAllMessages = React.createClass({
     
 
     // Sort Messages by time or popularity (ie number of votes)
-    var messageRowsSortedOptions = {
-    //   recent: messageRows.slice().sort(function(a,b){
-    //     return b.props.timestamp - a.props.timestamp;
-    //   }),
-    //   popular: messageRows.slice().sort(function(a,b){
-    //     return b.props.votes - a.props.votes;
-    //   })
-
-    //   myPosts: messageRows.filter(function(message){
-    //     if(this.props.sessions[this.props.auth.uid] && this.props.sessions[this.props.auth.uid].posted){
-    //       return this.props.sessions[this.props.auth.uid].posted.hasOwnProperty(message.props.messageId);
-    //     }
-    //     return false;
-    //   }.bind(this))
-    // };
-    //   //favorites will be much easier once we have usernames.
-    //   // favorites: messageRows.filter(function(message){
-    //   //   if(this.props.sessions[this.props.auth.uid] && this.props.sessions[this.props.auth.uid].favorites){
-    //   //     return this.props.sessions[this.props.auth.uid].favorites.hasOwnProperty(message.props.messageId);
-    //   //   }
-    //   //   return false;
-    //   // }.bind(this)).sort(function(a,b){ // not sorting correctly - FIX
-    //   //   return b.props.timestamp - a.props.timestamp;
-    //   // })
-
-    //   // myPosts will be much easier once we have user names.
-    //   // myPosts: messageRows.filter(function(message){
-    //   //   if(this.props.sessions[this.props.auth.uid] && this.props.sessions[this.props.auth.uid].posted){
-    //   //     return this.props.sessions[this.props.auth.uid].posted.hasOwnProperty(message.props.messageId);
-    //   //   }
-    //   //   return false;
-    //   // }.bind(this)),
-     };
+    
 
   },
 

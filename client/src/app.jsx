@@ -30,8 +30,8 @@ var mainView = React.createClass({
   getInitialState: function(){
     this.getMessages();
     return {
-      messages: '',
-      sort: 'recent'
+      messages: [],
+      sort: 'recent',
     };
   },
 
@@ -56,7 +56,6 @@ var mainView = React.createClass({
               totalVotes={ message.totalVotes }
               downVotes={ message.downVotes }
               upVotes={ message.upVotes }
-              comments={ message.comments }
               favorites={ message.favorites }
               timestamp={ message.timestamp } />
           );
@@ -69,6 +68,7 @@ var mainView = React.createClass({
 
   messagesUpdate: function(message) {
     console.log("messageUPDATEEEE", message);
+    
     this.state.messages.push(
       <Message
         messageId={ message._id }
@@ -77,7 +77,6 @@ var mainView = React.createClass({
         totalVotes={ message.totalVotes }
         downVotes={ message.downVotes }
         upVotes={ message.upVotes }
-        comments={ message.comments }
         favorites={ message.favorites }
         timestamp={ message.timestamp } />
     );
@@ -115,6 +114,64 @@ var mainView = React.createClass({
     }
   },
   render: function(){
+    var messageRowsSortedOptions = {
+      recent: function() {
+        console.log(this.state.messages);
+        var messages = this.state.messages.slice();
+        messages.sort(function(a,b){
+          return a.props.timestamp > b.props.timestamp ? -1 : 1;
+        })
+        console.log("messages", messages);
+        return messages;
+      }.bind(this),
+      popular: function() {
+        console.log(this.state.messages);
+        var messages = this.state.messages.slice();
+        messages.sort(function(a,b){
+          return b.props.totalVotes - a.props.totalVotes;
+        });
+        console.log(messages[0].props);
+        return messages;
+      }.bind(this),
+      favorites: function() {
+        var messages = this.state.messages.slice();
+        console.log(messages);
+        var filtered = messages.filter(function(message){
+          if (message.props.favorites.indexOf(window.sessionStorage.userId) !== -1) {
+            return message;
+          }
+        });
+        for (var i=0; i<filtered.length; i++){
+          console.log(filtered[i].props);
+        }
+        return filtered;
+      }.bind(this)
+    };
+
+    // myPosts: messageRows.filter(function(message){
+    //   if(this.props.sessions[this.props.auth.uid] && this.props.sessions[this.props.auth.uid].posted){
+    //     return this.props.sessions[this.props.auth.uid].posted.hasOwnProperty(message.props.messageId);
+    //   }
+    //   return false;
+    // }.bind(this))
+      //favorites will be much easier once we have usernames.
+      // favorites: messageRows.filter(function(message){
+      //   if(this.props.sessions[this.props.auth.uid] && this.props.sessions[this.props.auth.uid].favorites){
+      //     return this.props.sessions[this.props.auth.uid].favorites.hasOwnProperty(message.props.messageId);
+      //   }
+      //   return false;
+      // }.bind(this)).sort(function(a,b){ // not sorting correctly - FIX
+      //   return b.props.timestamp - a.props.timestamp;
+      // })
+
+      // myPosts will be much easier once we have user names.
+      // myPosts: messageRows.filter(function(message){
+      //   if(this.props.sessions[this.props.auth.uid] && this.props.sessions[this.props.auth.uid].posted){
+      //     return this.props.sessions[this.props.auth.uid].posted.hasOwnProperty(message.props.messageId);
+      //   }
+      //   return false;
+      // }.bind(this)),
+
     return (
       <div>
         <TopBar/>
@@ -131,7 +188,7 @@ var mainView = React.createClass({
             <InputBox style={this.styles.style} messagesUpdate={this.messagesUpdate} />
           </div>
           <div style={ this.styles.messageRows }>        
-            {this.state.messages}
+            { messageRowsSortedOptions[this.state.sort]() }
           </div>
         </div>
 
