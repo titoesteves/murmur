@@ -5,7 +5,6 @@ var url = 'http://0.0.0.0:3000/';
 var MessageBox = React.createClass({
   mixins: [React.addons.LinkedStateMixin],
   getInitialState: function() {
-    console.log("creating message!");
     return {message: ''};
 
   },

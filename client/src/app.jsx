@@ -30,11 +30,14 @@ var mainView = React.createClass({
 
   messages: [],
   getInitialState: function(){
-    this.getMessages();
     return {
       messages: [],
       sort: 'recent',
     };
+  },
+
+  componentWillMount: function(){
+    this.getMessages();
   },
 
   getMessages: function(){
@@ -59,7 +62,8 @@ var mainView = React.createClass({
               downVotes={ message.downVotes }
               upVotes={ message.upVotes }
               favorites={ message.favorites }
-              timestamp={ message.timestamp } />
+              timestamp={ message.timestamp }
+              messagesUpdate={ this.messagesUpdate } />
           );
         }
         // this.setState({messages: "easy"});
@@ -69,34 +73,38 @@ var mainView = React.createClass({
   },
 
   messagesUpdate: function(message) {
-    console.log("messageUPDATEEEE", message);
     
-    this.state.messages.push(
-      <Message
-        messageId={ message._id }
-        message={ message.message }
-        comments={ message.comments }
-        totalVotes={ message.totalVotes }
-        downVotes={ message.downVotes }
-        upVotes={ message.upVotes }
-        favorites={ message.favorites }
-        timestamp={ message.timestamp } />
-    );
-    this.setState({messages: this.state.messages});
+    // this.state.messages.push(
+    //   <Message
+    //     messageId={ message._id }
+    //     message={ message.message }
+    //     comments={ message.comments }
+    //     totalVotes={ message.totalVotes }
+    //     downVotes={ message.downVotes }
+    //     upVotes={ message.upVotes }
+    //     favorites={ message.favorites }
+    //     timestamp={ message.timestamp } />
+    // );
+    // this.setState({messages: this.state.messages});
+    this.getMessages();
   },
 
 
   handleSortRecent: function(){
     this.setState({sort: 'recent'});
+    this.getMessages();
   },
   handleSortPopular: function(){
     this.setState({sort: 'popular'});
+    this.getMessages();
   },
   handleFavorites: function(){
     this.setState({sort: 'favorites'});
+    this.getMessages();
   },
   handleMyPosts: function(){
     this.setState({sort: 'myPosts'});
+    this.getMessages();
   },
 
   styles: {
@@ -144,8 +152,9 @@ var mainView = React.createClass({
           }
         });
         for (var i=0; i<filtered.length; i++){
-          console.log(filtered[i].props);
+          console.log(filtered[i].props)
         }
+        console.log(filtered);
         return filtered;
       }.bind(this)
     };
