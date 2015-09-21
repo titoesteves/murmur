@@ -27,7 +27,6 @@ var Message = React.createClass({
         commentId={ newComment._id }
         messageId={ newComment.messageId }
         comment={ newComment.comment }
-        commentVotes={ 0 }
         timestamp={ newComment.timestamp } />
     );
     console.log("comments updated", this.state.commentRows);

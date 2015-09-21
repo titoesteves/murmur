@@ -11,37 +11,6 @@ module.exports = React.createClass({
       commentBox: 'false',
     }
   },
-  upVote: function(event){
-    $.ajax({
-      type: 'POST',
-      url: url + 'voteComment' ,
-      contentType: 'application/json',
-      data: JSON.stringify({
-        "messageId": this.props.messageId,
-        "commentId": this.props.commentId,
-        "vote": true,
-        "token": this.props.token,
-      }),
-      success: function(){
-      }
-    })
-  },
-  downVote: function(event){
-
-    $.ajax({
-      type: 'POST',
-      url: url + 'voteComment' ,
-      contentType: 'application/json',
-      data: JSON.stringify({
-        "messageId": this.props.messageId,
-        "commentId": this.props.commentId,
-        "vote": false,
-        "token": this.props.token,
-      }),
-      success: function(){
-      }
-    })
-  },
   render: function() {
     return (
       <div id={ this.props.commentId } key={this.props.commentId} >
@@ -60,11 +29,6 @@ module.exports = React.createClass({
             </span>
           </div>
         </div>
-        <div style={ this.styles.voteContainer }>
-          <i className="glyphicon glyphicon-chevron-up" style={{color: "#0000FF"}} onClick={ this.upVote }></i>
-            <span className="count"  style={ this.styles.voteCount }> 0 </span>
-          <i className="glyphicon glyphicon-chevron-down" style={{color: "#0000FF"}} onClick={ this.downVote }></i>
-        </div>
       </div>
     )
   },
@@ -79,17 +43,6 @@ module.exports = React.createClass({
       float: "right",
       fontSize: "19px",
       textAlign: 'center'
-    },
-    voteContainer: {
-      width: "20px",
-      float: "right",
-      position: 'relative',
-      left: '-20px'
-    },
-    voteCount: {
-      margin: 'auto',
-      fontSize: '1em',
-      fontFamily: 'Alegreya'
     },
     writeButton: {
       float: "left",
