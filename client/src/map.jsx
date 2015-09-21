@@ -1,9 +1,6 @@
 var React = require('react');
 var url = 'http://0.0.0.0:3000/';
-var message = "<p>Hi this is a message popUp</p>"
-var arr = [{messages: 'Hi', lat: 37.77493, lng: -122.41942}, {messages: 'Hello', lat: 37.423021, lng: -122.083739}];
 var Message = require('./message.jsx');
-var messages;
 
 module.exports = React.createClass({
     getInitialState: function() {
@@ -74,13 +71,13 @@ module.exports = React.createClass({
             });
         }
 
-        for(var i = 0; i < this.state.messages.length; i++){
+        for(var i = 0; i < this.props.messages.length; i++){
             var Newmarker = new google.maps.Marker({       
-                position: new google.maps.LatLng(this.state.messages[i]._store.props.latitude, this.state.messages[i]._store.props.longitude), 
+                position: new google.maps.LatLng(this.props.messages[i]._store.props.latitude, this.props.messages[i]._store.props.longitude), 
                 map: map,
                 icon: new google.maps.MarkerImage("http://icons.iconarchive.com/icons/custom-icon-design/mono-general-1/512/chat-icon.png", null, null, null, new google.maps.Size(40, 40))     
             }); 
-            addInfoWindow(Newmarker, this.state.messages[i]._store.props.message);
+            addInfoWindow(Newmarker, this.props.messages[i]._store.props.message);
         }
 
     },
