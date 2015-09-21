@@ -2,6 +2,8 @@ var React = require('react');
 var moment = require('moment');
 var CommentBox = require('./commentBox');
 var Comment = require('./comment');
+var Face = require('./face');
+
 
 var url = 'http://0.0.0.0:3000/';
 
@@ -172,7 +174,7 @@ var Message = React.createClass({
             commentMessage={ comments.comment }
             commentVotes={ comments.votes }
             commentTimestamp={ comments.timestamp }
-            baseId={ comments.baseId }
+            faceId={ comments.faceId }
             hairId={ comments.hairId } />
         );
       }
@@ -207,8 +209,10 @@ var Message = React.createClass({
     return (
       <div className="jumbotron" id={this.props.messageId} key={this.props.messageId} style={{ borderRadius: '40px', paddingLeft: '0', paddingRight: '0', paddingTop: '15px', paddingBottom: '7px', backgroundColor: '#ECF0F5'}} >
         <div className="container">
-          <div className="col-xs-10" style={{ marginBottom: '20px', paddingLeft:'10px', marginBottom: '0'}}>
-            <p style={{fontFamily: 'Alegreya', color: 'chocolate', marginLeft: "10px", marginBottom: '0'}}>
+          
+          <div className="col-xs-10 clearfix" style={{ marginBottom: '20px', paddingLeft:'10px', marginBottom: '0'}}>
+            <Face faceId={this.props.faceId} hairId={this.props.hairId}/>
+            <p style={{fontFamily: 'Alegreya', color: 'chocolate', marginLeft: "10px", marginBottom: '0', float:"left", marginTop:"10px"}}>
               { this.props.message }
             </p>
           </div>
@@ -226,6 +230,7 @@ var Message = React.createClass({
                 <i className="glyphicon glyphicon-heart"></i>
               </span>
             </div>
+            
             <div className="col-xs-2" style={ this.styles.timestamp }>
               <i className="glyphicon glyphicon-time" style={ this.styles.iconStyle }></i>
               <span style={{fontFamily:"Alegreya", fontStyle: "italic", fontSize: '.8em', position: 'relative', top: '-7px'}}>

@@ -19,8 +19,6 @@ var url = 'http://0.0.0.0:3000/';
 // }
 
 // bind nonsensitive info to sessionStorage for easy use amongst files
-window.sessionStorage.userId = "Dylan";
-window.sessionStorage.username = window.sessionStorage.username || 'Anonymous';
 
 // var cookies = getCookies();
 // var token = document.token = cookies.token;
@@ -50,11 +48,12 @@ var mainView = React.createClass({
         var messageRows = [];
         for(var i=0; i<messages.length; i++) {
           var message = messages[i];
+          console.log(message);
           //this is utilizing the message component and setting message properties for use in the message view.
-          // baseId={ message.baseId}
-          // hairId={ message.hairId}
           messageRows.push(
             <Message
+              faceId={ message.faceId }
+              hairId={ message.hairId }
               userId={ message.userId }
               messageId={ message._id }
               message={ message.message }
@@ -120,7 +119,8 @@ var mainView = React.createClass({
       padding: '10px',
       width: '50%',
       height: '100px',
-      float: 'left'
+      float: 'left',
+      margin: 'auto'
     },
     inputBox: {
       marginTop: '200px'
