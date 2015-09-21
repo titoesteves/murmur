@@ -1,27 +1,73 @@
 var React = require('react');
 var moment = require('moment');
 var CommentBox = require('./commentBox');
-var CommentMessage = require('./commentMessage');
+var Comment = require('./comment');
 
 var url = 'http://0.0.0.0:3000/';
 
 var Message = React.createClass({
 
   getInitialState: function() {
+    console.log("creating message!");
+
+    this.loadComments();
+    console.log("totalVotes", this.props.totalVotes, this.props.message);
     return {
-      commentsView: false
+      commentsView: false,
+      commentRows: [],
+      favorites: this.props.favorites,
+      totalVotes: this.props.totalVotes,
+      upVotes: this.props.upVotes,
+      downVotes: this.props.downVotes
     };
   },
 
-  toggleCommentsView: function(){
-    this.setState({ commentsView: !this.state.commentsView })
+  commentsUpdate: function(newComment) {
+    
+    this.state.commentRows.push(
+      <Comment
+        commentId={ newComment._id }
+        messageId={ newComment.messageId }
+        comment={ newComment.comment }
+        timestamp={ newComment.timestamp } />
+    );
+    this.setState({commentRows: this.state.commentRows})
+  },
+
+  toggleComments: function() {
+    this.setState({ commentsView: !this.state.commentsView });
+  },
+
+  loadComments: function(){
+    var commentRows = [];
+    $.ajax({
+      type: 'POST',
+      data: JSON.stringify({
+        "messageId": this.props.messageId,
+      }),
+      url: url+'comments',
+      contentType: 'application/json',
+      success: function(comments) {
+        var comments = JSON.parse(comments);
+        for (var i=0; i<comments.length; i++){
+          commentRows.push(
+            <Comment
+              commentId={ comments[i]._id }
+              messageId={ comments[i].messageId }
+              comment={ comments[i].comment }
+              commentVotes={ 0 }
+              timestamp={ comments[i].timestamp } />
+          );
+        }
+        this.setState({ commentRows: commentRows });
+      }.bind(this)
+    });
   },
 
   // Post upvote data to Server
   upVoteToggle: function(){
-    console.log("togged upVote!");
-    var upVotes = this.props.upVotes; //favorites is a object of objects with userIds as keys and true/false as values.    
-    var totalVotes = this.props.totalVotes;
+    var upVotes = this.state.upVotes;  
+    var totalVotes = this.state.totalVotes;
     var voteLoc = upVotes.indexOf(window.sessionStorage.userId);
     if (voteLoc !== -1){
       upVotes.splice(voteLoc, 1);
@@ -31,11 +77,11 @@ var Message = React.createClass({
       upVotes.push(window.sessionStorage.userId);
       var newTotal = totalVotes + 1;
     }
-    if (this.props.upVotes.indexOf(window.sessionStorage.userId) !== -1) {
-      // this.upVoteToggle();
-    }
-    console.log("newTotal", newTotal);
-    console.log("upVotes", upVotes);
+    // if (this.state.upVotes.indexOf(window.sessionStorage.userId) !== -1) {
+    //   // this.upVoteToggle();
+    // }
+    this.setState({totalVotes: newTotal})
+    this.setState({upVotes: upVotes});
 
     $.ajax({
       type: 'POST',
@@ -53,9 +99,8 @@ var Message = React.createClass({
 
   // Post downvote data to Server
   downVoteToggle: function(){
-    console.log("togged downvote!");
-    var downVotes = this.props.downVotes; //favorites is a object of objects with userIds as keys and true/false as values.    
-    var totalVotes = this.props.totalVotes;
+    var downVotes = this.state.downVotes; //favorites is a object of objects with userIds as keys and true/false as values.    
+    var totalVotes = this.state.totalVotes;
     var voteLoc = downVotes.indexOf(window.sessionStorage.userId);
     if (voteLoc !== -1){
       downVotes.splice(voteLoc, 1);
@@ -68,8 +113,8 @@ var Message = React.createClass({
     if (this.props.upVotes.indexOf(window.sessionStorage.userId) !== -1) {
       // this.upVoteToggle();
     }
-    console.log("newTotal", newTotal);
-    console.log("downVotes", downVotes);
+    this.setState({totalVotes: newTotal});
+    this.setState({downVotes: downVotes})
 
     $.ajax({
       type: 'POST',
@@ -86,15 +131,13 @@ var Message = React.createClass({
   },
 
   toggleFavorite: function(event){
-    console.log("togged fav!");
-    var favs = this.props.favorites; //favorites is a object of objects with userIds as keys and true/false as values.    
+    var favs = this.state.favorites.slice(); //favorites is a object of objects with userIds as keys and true/false as values.    
     var favLocation = favs.indexOf(window.sessionStorage.userId);
     if (favLocation !== -1){
       favs.splice(favLocation, 1);
     }
     else {
       favs.push(window.sessionStorage.userId);
-      console.log(favs);
     }
     $.ajax({
       type: 'POST',
@@ -104,9 +147,10 @@ var Message = React.createClass({
         "messageId": this.props.messageId,
         "favorites": favs,
       }),
-      success: function(err, data){
-        console.log(data);
-      }
+      success: function(data, err){
+        this.setState({favorites: favs})
+      }.bind(this)
+
     });
   },
 
@@ -141,20 +185,14 @@ var Message = React.createClass({
     }
 
     var commentRowsSortedOptions = {
-      recent: commentRows.slice().sort(function(a,b){
-        return b.props.commentTimestamp - a.props.commentTimestamp;
-      }),
-      popular: commentRows.slice().sort(function(a,b){
-        return b.props.commentVotes - a.props.commentVotes;
-      }),
-    }
-
-    var commentNumber = this.props.comments.length;
-                    // 119{ commentNumber } comments
+      recent: this.state.commentRows.sort(function(a,b){
+        return a.props.timestamp > b.props.timestamp ? -1 : 1;
+      })
+    };
 
     var styleFavorites =
       // check if the 'uid' favorited the message
-      this.props.favorites.indexOf(window.sessionStorage.userId) === -1 ?
+      this.state.favorites.indexOf(window.sessionStorage.userId) === -1 ?
         {
           float: 'left',
           marginRight: '10px',
@@ -173,7 +211,7 @@ var Message = React.createClass({
         }
 
     return (
-      <div className="jumbotron" id={ this.props.messageId } style={{ borderRadius: '40px', paddingLeft: '0', paddingRight: '0', paddingTop: '15px', paddingBottom: '7px', backgroundColor: '#ECF0F5'}} >
+      <div className="jumbotron" id= {this.props.messageId} key={this.props.messageId}  style={{ borderRadius: '40px', paddingLeft: '0', paddingRight: '0', paddingTop: '15px', paddingBottom: '7px', backgroundColor: '#ECF0F5'}} >
         <div className="container">
           <div className="col-xs-10" style={{ marginBottom: '20px', paddingLeft:'10px', marginBottom: '0'}}>
             <p style={{fontFamily: 'Alegreya', color: 'chocolate', marginLeft: "10px", marginBottom: '0'}}>
@@ -183,7 +221,7 @@ var Message = React.createClass({
           <div className="votes col-xs-2" style={ this.styles.votes }>
             <div style={ this.styles.voteContainer }>
               <i className="glyphicon glyphicon-chevron-up" style={{color: "#0000FF", cursor:"pointer"}} onClick={ this.upVoteToggle }></i>
-              <span className="count" style={{fontFamily: 'Alegreya'}}> { this.props.totalVotes } </span>
+              <span className="count" style={{fontFamily: 'Alegreya'}}> { this.state.totalVotes } </span>
               <i className="glyphicon glyphicon-chevron-down" style={{color: "#0000FF", cursor:"pointer"}} onClick={ this.downVoteToggle }></i>
             </div>
           </div>
@@ -201,22 +239,20 @@ var Message = React.createClass({
               </span>
             </div>
             <div style={ this.styles.comments }>
-              <div className="commentViewToggle" onClick={ this.toggleCommentsView }>
+              <div className="commentViewToggle" onClick={ this.toggleComments } style={{cursor:"pointer"}}>
                 <i className="glyphicon glyphicon-comment" style={ this.styles.iconStyle }></i>
                 <span style={{fontStyle: "italic", fontSize: '.8em'}}>
-                  <span style={{cursor:"pointer", fontFamily:"Alegreya", fontWeight: 'bold', color: 'blue', fontSize: '1.1em', position: 'relative', top: '-7px'}}> { this.state.commentsView ? 'hide ' : 'show ' } </span>
-                  <span style={{fontFamily:"Alegreya", position: 'relative', top: '-7px'}}> { commentNumber + ' comments'} </span>
+                  <span style={{fontFamily:"Alegreya", fontWeight: 'bold', color: 'blue', fontSize: '1.1em', position: 'relative', top: '-7px'}}> { this.state.commentsView ? 'hide ' : 'show ' } </span>
+                  <span style={{fontFamily:"Alegreya", position: 'relative', top: '-7px'}}> { this.state.commentRows.length + ' comments'} </span>
                 </span>
               </div>
             </div>
           </div>
 
           <div style={ this.state.commentsView ? this.styles.commentsView : this.styles.hidden }>
-            <CommentBox messageId={ this.props.messageId } token={ this.props.token } auth={ this.props.auth }/>
-            { commentRowsSortedOptions['recent'] }
+            <CommentBox messageId={ this.props.messageId } commentsUpdate={this.commentsUpdate} />
+            { commentRowsSortedOptions.recent }
           </div>
-
-
         </div>
       </div>
     )

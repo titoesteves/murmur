@@ -1,71 +1,47 @@
-var React = require('react');
-var url = 'http://0.0.0.0:3000/comment';
+var React = require('react/addons');
+var url = 'http://0.0.0.0:3000/';
 
 var commentBox = React.createClass({
+  mixins: [React.addons.LinkedStateMixin],
   getInitialState: function() {
     return {
       comment: ''
     };
   },
-  // Update message value whenever user changes the message in the comment box
-  handleChange: function(event){
-    if(event.target.value.length <= 150) { // Message cannot be longer than 150 characters
-      console.log(this.props.token)
-      this.setState({
-        'comment': event.target.value,
-      });
-    }
-  },
-  // Post a message when "Submit" button is clicked
-  handleClick: function(event){
-    event.preventDefault();
+
+  handleSubmit: function(event) {
+    event.preventDefault(); //prevent the form from actually submitting.
+    this.setState({comment: ''});
+    console.log("comment submitted!", this.props.messageId);
     $.ajax({
       type: 'POST',
-      url: url,
+      url: url + "comment",
       contentType: 'application/json',
       data: JSON.stringify({
-        "comment": this.state.comment,
-        'messageId': this.props.messageId,
-        "token": this.props.token,
+        //maybe the userId and username are set on the server side..
+        "userId": window.sessionStorage.userId, //this needs to be set by the session.
+        "username": window.sessionStorage.username, //this needs to be set by the session.
+        "messageId": this.props.messageId,
+        "comment": this.state.comment
       }),
-      success: function(d){
-        console.log('POST successful: ', d);
-      }
+      success: function(data, err){
+        console.log('POST successful: ', data);
+        this.props.commentsUpdate(data);
+      }.bind(this)
     });
-    this.setState({comment: ''}); // Clear comment box
-    console.log(this.props.auth);
-  },
-
-   enterPressed: function(event) {
-    if(event.keyCode === 13) {
-      event.preventDefault();
-      $.ajax({ // Post comment
-        type: 'POST',
-        url: url,
-        contentType: 'application/json',
-        data: JSON.stringify({
-          "comment": this.state.comment,
-          'messageId': this.props.messageId,
-          "token": this.props.token,
-        }),
-        success: function(d){
-          console.log('POST successful: ', d);
-        }
-      });
-      this.setState({comment: ''}); // Clear comment box
-      console.log(this.state);
-    }
   },
 
   // two-way binding commentBox's value and this.state.comment
   render: function() {
     return (
-        <div className="input-group" style = {{padding: '15px'}}>
-          <input value={this.state.comment} onChange={this.handleChange} onKeyDown={this.enterPressed} type="text" className="form-control" placeholder="Enter your comment here."/>
+      <div className="input-group" style = {{padding: '15px'}}>
+        <form onSubmit={this.handleSubmit} className="clearfix">
+          <input type="text" valueLink={this.linkState('comment')} className="form-control" placeholder="Enter your comment here" />
           <span className="input-group-btn">
-            <button onClick={this.handleClick} className="btn btn-success" type="button"> Submit </button>
+            <input type="submit" className="btn btn-success"> Submit </input>
           </span>
-        </div>
+        </form>
+      </div>
     )
   }
 });

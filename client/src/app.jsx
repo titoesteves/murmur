@@ -1,77 +1,88 @@
 var React = require('react');
-var ViewAllMessages = require('./viewAllMessages');
+var Message = require('./message');
 var TopBar = require('./topbar');
-var InputBox = require('./inputbox');
+var InputBox = require('./messageBox');
 var LoginSignupModal = require('./loginSignupModal');
 var Map = require('./map');
+var url = 'http://0.0.0.0:3000/';
 
 
-var getCookies = function(){
-  var pairs = document.cookie.split(";");
-  var cookies = {};
-  for (var i=0; i<pairs.length; i++){
-    pairs
-    var pair = pairs[i].trim().split("=");
-    cookies[pair[0]] = unescape(pair[1]);
-  }
-  return cookies;
-}
+// var getCookies = function(){
+//   var pairs = document.cookie.split(";");
+//   var cookies = {};
+//   for (var i=0; i<pairs.length; i++){
+//     pairs
+//     var pair = pairs[i].trim().split("=");
+//     cookies[pair[0]] = unescape(pair[1]);
+//   }
+//   return cookies;
+// }
 
 window.sessionStorage.userId = "Dylan";
 
-var cookies = getCookies();
-var token = document.token = cookies.token;
-var auth = document.auth = cookies.auth;
+// var cookies = getCookies();
+// var token = document.token = cookies.token;
+// var auth = document.auth = cookies.auth;
 
 var mainView = React.createClass({
 
   messages: [],
   getInitialState: function(){
+    this.getMessages();
     return {
-      messages: '',
+      messages: [],
       sort: 'recent',
-      token: '',
-      auth: '',
-      sessions: '',
     };
   },
 
-  // Retrieve the messages data from Firebase
-  // componentWillMount: function(){
-  //   if(token){
-  //     var context = this;
-  //     this.firebaseRef = new Firebase('https://resplendent-inferno-6476.firebaseio.com/');
-  //     this.firebaseRef.authWithCustomToken(token, function(error, authData){
-  //       if(error){
-  //         console.log('Problem connecting to Database', error)
-  //       } else {
-  //         console.log('Connected to Databse')
-  //         context.setState({
-  //           token: authData.token,
-  //           auth: authData.auth,
-  //         });
-  //       }
-  //     })
-  //     this.messageRef = this.firebaseRef.child('Fresh Post');
-  //     this.messageRef.on('value', function(dataSnapshot){
-  //       this.messages.push(dataSnapshot.val());
-  //       this.setState({
-  //         messages: dataSnapshot.val()
-  //       });
-  //       console.log('inFreshPost', dataSnapshot.val())
-  //     }.bind(this));
+  getMessages: function(){
+    $.ajax({
+      type: 'GET',
+      url: url + 'message',
+      contentType: 'application/json',
+      success: function(messages){
+        var messages = JSON.parse(messages);
+        var messageRows = [];
+        for(var i=0; i<messages.length; i++) {
+          var message = messages[i];
+          //this is utilizing the message component and setting message properties for use in the message view.
+          // baseId={ message.baseId}
+          // hairId={ message.hairId}
+          messageRows.push(
+            <Message
+              messageId={ message._id }
+              message={ message.message }
+              comments={ message.comments }
+              totalVotes={ message.totalVotes }
+              downVotes={ message.downVotes }
+              upVotes={ message.upVotes }
+              favorites={ message.favorites }
+              timestamp={ message.timestamp } />
+          );
+        }
+        // this.setState({messages: "easy"});
+        this.setState({messages:messageRows});
+      }.bind(this)
+    });
+  },
 
-  //     this.sessionsRef = this.firebaseRef.child('sessions');
-  //     this.sessionsRef.on('value', function(dataSnapshot){
-  //       this.messages.push(dataSnapshot.val());
-  //       this.setState({
-  //         sessions: dataSnapshot.val()
-  //       });
-  //     // console.log('SESSSSSSSSSSSSSSSSionREF', this.sessionRef.toString())
-  //       console.log('inSession', dataSnapshot.val())
-  //     }.bind(this));
-  //   }
-  // },
+  messagesUpdate: function(message) {
+    console.log("messageUPDATEEEE", message);
+    
+    this.state.messages.push(
+      <Message
+        messageId={ message._id }
+        message={ message.message }
+        comments={ message.comments }
+        totalVotes={ message.totalVotes }
+        downVotes={ message.downVotes }
+        upVotes={ message.upVotes }
+        favorites={ message.favorites }
+        timestamp={ message.timestamp } />
+    );
+    this.setState({messages: this.state.messages});
+  },
+
 
   handleSortRecent: function(){
     this.setState({sort: 'recent'});
@@ -85,20 +96,82 @@ var mainView = React.createClass({
   handleMyPosts: function(){
     this.setState({sort: 'myPosts'});
   },
-  toggleInputBox: function(){
-    this.setState({ input: !this.state.input })
-  },
+
   styles: {
     filter: {
       paddingTop: '80px',
       width: '100%',
       textAlign: 'center'
     },
+    messageRows: {
+      padding: '10px',
+      width: '50%',
+      height: '100px',
+      float: 'left'
+    },
     inputBox: {
       marginTop: '200px'
     }
   },
   render: function(){
+    var messageRowsSortedOptions = {
+      recent: function() {
+        console.log(this.state.messages);
+        var messages = this.state.messages.slice();
+        messages.sort(function(a,b){
+          return a.props.timestamp > b.props.timestamp ? -1 : 1;
+        })
+        console.log("messages", messages);
+        return messages;
+      }.bind(this),
+      popular: function() {
+        console.log(this.state.messages);
+        var messages = this.state.messages.slice();
+        messages.sort(function(a,b){
+          return b.props.totalVotes - a.props.totalVotes;
+        });
+        console.log(messages[0].props);
+        return messages;
+      }.bind(this),
+      favorites: function() {
+        var messages = this.state.messages.slice();
+        console.log(messages);
+        var filtered = messages.filter(function(message){
+          if (message.props.favorites.indexOf(window.sessionStorage.userId) !== -1) {
+            return message;
+          }
+        });
+        for (var i=0; i<filtered.length; i++){
+          console.log(filtered[i].props);
+        }
+        return filtered;
+      }.bind(this)
+    };
+
+    // myPosts: messageRows.filter(function(message){
+    //   if(this.props.sessions[this.props.auth.uid] && this.props.sessions[this.props.auth.uid].posted){
+    //     return this.props.sessions[this.props.auth.uid].posted.hasOwnProperty(message.props.messageId);
+    //   }
+    //   return false;
+    // }.bind(this))
+      //favorites will be much easier once we have usernames.
+      // favorites: messageRows.filter(function(message){
+      //   if(this.props.sessions[this.props.auth.uid] && this.props.sessions[this.props.auth.uid].favorites){
+      //     return this.props.sessions[this.props.auth.uid].favorites.hasOwnProperty(message.props.messageId);
+      //   }
+      //   return false;
+      // }.bind(this)).sort(function(a,b){ // not sorting correctly - FIX
+      //   return b.props.timestamp - a.props.timestamp;
+      // })
+
+      // myPosts will be much easier once we have user names.
+      // myPosts: messageRows.filter(function(message){
+      //   if(this.props.sessions[this.props.auth.uid] && this.props.sessions[this.props.auth.uid].posted){
+      //     return this.props.sessions[this.props.auth.uid].posted.hasOwnProperty(message.props.messageId);
+      //   }
+      //   return false;
+      // }.bind(this)),
+
     return (
       <div>
         <TopBar/>
@@ -112,14 +185,16 @@ var mainView = React.createClass({
               <button className="btn btn-default" style={{fontFamily: 'Roboto'}} onClick={ this.handleFavorites }>Favorites</button>
               <button className="btn btn-default" style={{fontFamily: 'Roboto'}} onClick={ this.handleMyPosts }>My Posts</button>
             </div>
-            <InputBox style={this.styles.style} token={ this.state.token } auth={ this.state.auth }/>
+            <InputBox style={this.styles.style} messagesUpdate={this.messagesUpdate} />
           </div>
-          <ViewAllMessages/>
+          <div style={ this.styles.messageRows }>        
+            { messageRowsSortedOptions[this.state.sort]() }
+          </div>
         </div>
 
       </div>
     )
-  },
+  }
 })
 
 

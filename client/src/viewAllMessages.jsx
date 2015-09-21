@@ -6,6 +6,7 @@ var url = 'http://0.0.0.0:3000/';
 var ViewAllMessages = React.createClass({
 
   getInitialState: function() {
+    this.getMessages();
     return {
       messages:'' //the messages are initially empty, set later by the call to the messages json file.
     }
@@ -42,96 +43,23 @@ var ViewAllMessages = React.createClass({
   //   });
   // },
   
-  getMessages: function(){
-    $.ajax({
-      type: 'GET',
-      url: url + 'message',
-      contentType: 'application/json',
-      success: function(messages){
-        var messages = JSON.parse(messages);
-        var messageRows = [];
-        for(var i=0; i<messages.length; i++) {
-          var message = messages[i];
-          //this is utilizing the message component and setting message properties for use in the message view.
-          // baseId={ message.baseId}
-          // hairId={ message.hairId}
-          messageRows.push(
-            <Message
-              messageId={ message._id }
-              message={ message.message }
-              comments={ message.comments }
-              totalVotes={ message.totalVotes }
-              downVotes={ message.downVotes }
-              upVotes={ message.upVotes }
-              comments={ message.comments }
-              favorites={ message.favorites }
-              timestamp={ message.timestamp } />
-          );
-        }
-        // this.setState({messages: "easy"});
-        this.setState({messages:messageRows});
-      }.bind(this)
-    });
-  },
+ 
+
+  
 
 
   render: function() {
 
-    this.getMessages(); //fetch the messages from the db. They get set to messages state to be displayed.
+    //fetch the messages from the db. They get set to messages state to be displayed.
 
     // Push messages from Firebase to messageRows
     
 
     // Sort Messages by time or popularity (ie number of votes)
-    var messageRowsSortedOptions = {
-    //   recent: messageRows.slice().sort(function(a,b){
-    //     return b.props.timestamp - a.props.timestamp;
-    //   }),
-    //   popular: messageRows.slice().sort(function(a,b){
-    //     return b.props.votes - a.props.votes;
-    //   })
+    
 
-    //   myPosts: messageRows.filter(function(message){
-    //     if(this.props.sessions[this.props.auth.uid] && this.props.sessions[this.props.auth.uid].posted){
-    //       return this.props.sessions[this.props.auth.uid].posted.hasOwnProperty(message.props.messageId);
-    //     }
-    //     return false;
-    //   }.bind(this))
-    // };
-    //   //favorites will be much easier once we have usernames.
-    //   // favorites: messageRows.filter(function(message){
-    //   //   if(this.props.sessions[this.props.auth.uid] && this.props.sessions[this.props.auth.uid].favorites){
-    //   //     return this.props.sessions[this.props.auth.uid].favorites.hasOwnProperty(message.props.messageId);
-    //   //   }
-    //   //   return false;
-    //   // }.bind(this)).sort(function(a,b){ // not sorting correctly - FIX
-    //   //   return b.props.timestamp - a.props.timestamp;
-    //   // })
-
-    //   // myPosts will be much easier once we have user names.
-    //   // myPosts: messageRows.filter(function(message){
-    //   //   if(this.props.sessions[this.props.auth.uid] && this.props.sessions[this.props.auth.uid].posted){
-    //   //     return this.props.sessions[this.props.auth.uid].posted.hasOwnProperty(message.props.messageId);
-    //   //   }
-    //   //   return false;
-    //   // }.bind(this)),
-     };
-
-    return (
-      <div style={ this.styles.messageRows }>        
-        {this.state.messages}
-      </div>
-    );
   },
 
-  styles: {
-    messageRows: {
-      padding: '10px',
-      width: '50%',
-      height: '100px',
-      float: 'left'
-    }
-  }
 });
 
 module.exports = ViewAllMessages;
