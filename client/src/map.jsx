@@ -6,7 +6,6 @@ module.exports = React.createClass({
     showMap: function(position){
         localStorage.setItem('latitude', position.coords.latitude);
         localStorage.setItem('longitude', position.coords.longitude);
-        var iconBase = 'https://maps.google.com/mapfiles/kml/shapes/'; 
         var mapOptions = {
                 center: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
                 zoom: 20
@@ -17,7 +16,7 @@ module.exports = React.createClass({
             position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude), 
             map: map, 
             title: "Where you're at", 
-            icon: new google.maps.MarkerImage(iconBase + 'man.png', null, null, null, new google.maps.Size(40, 40)) 
+            icon: new google.maps.MarkerImage('https://maps.google.com/mapfiles/kml/shapes/man.png', null, null, null, new google.maps.Size(40, 40)) 
         });
 
         marker.addListener('click', function(){
