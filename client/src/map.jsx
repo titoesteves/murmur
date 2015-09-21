@@ -41,12 +41,12 @@ module.exports = React.createClass({
             },
             map = new google.maps.Map(this.getDOMNode(), mapOptions);
 
-        var marker = new google.maps.Marker({
-            position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude), 
-            map: map, 
-            title: "Where you're at", 
-            icon: new google.maps.MarkerImage(iconBase + 'man.png', null, null, null, new google.maps.Size(40, 40)) 
-        });
+        // var marker = new google.maps.Marker({
+        //     position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude), 
+        //     map: map, 
+        //     title: "Where you're at", 
+        //     icon: new google.maps.MarkerImage(iconBase + 'man.png', null, null, null, new google.maps.Size(40, 40)) 
+        // });
 
         marker.addListener('click', function(){
             map.setZoom(30);
@@ -76,6 +76,7 @@ module.exports = React.createClass({
                 icon: new google.maps.MarkerImage("http://icons.iconarchive.com/icons/custom-icon-design/mono-general-1/512/chat-icon.png", null, null, null, new google.maps.Size(40, 40))     
             }); 
             addInfoWindow(Newmarker, this.state.messages[i]._store.props.message);
+
         }
 
     },
