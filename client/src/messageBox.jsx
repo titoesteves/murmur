@@ -9,7 +9,7 @@ var MessageBox = React.createClass({
   },
   handleSubmit: function(event) {
     event.preventDefault(); //prevent the form from actually submitting.
-
+    this.setState({message: ''});
     $.ajax({
       type: 'POST',
       url: url + "message",
@@ -22,9 +22,9 @@ var MessageBox = React.createClass({
         "latitude": localStorage.latitude,
         "longitude": localStorage.longitude
       }),
-      success: function(err, data){
+      success: function(data, err){
         console.log(data);
-        
+        this.props.messagesUpdate(data);
       }.bind(this)
     });
   },

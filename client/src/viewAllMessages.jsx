@@ -43,37 +43,9 @@ var ViewAllMessages = React.createClass({
   //   });
   // },
   
-  getMessages: function(){
-    $.ajax({
-      type: 'GET',
-      url: url + 'message',
-      contentType: 'application/json',
-      success: function(messages){
-        var messages = JSON.parse(messages);
-        var messageRows = [];
-        for(var i=0; i<messages.length; i++) {
-          var message = messages[i];
-          //this is utilizing the message component and setting message properties for use in the message view.
-          // baseId={ message.baseId}
-          // hairId={ message.hairId}
-          messageRows.push(
-            <Message
-              messageId={ message._id }
-              message={ message.message }
-              comments={ message.comments }
-              totalVotes={ message.totalVotes }
-              downVotes={ message.downVotes }
-              upVotes={ message.upVotes }
-              comments={ message.comments }
-              favorites={ message.favorites }
-              timestamp={ message.timestamp } />
-          );
-        }
-        // this.setState({messages: "easy"});
-        this.setState({messages:messageRows});
-      }.bind(this)
-    });
-  },
+ 
+
+  
 
 
   render: function() {
@@ -118,21 +90,8 @@ var ViewAllMessages = React.createClass({
     //   // }.bind(this)),
      };
 
-    return (
-      <div style={ this.styles.messageRows }>        
-        {this.state.messages}
-      </div>
-    );
   },
 
-  styles: {
-    messageRows: {
-      padding: '10px',
-      width: '50%',
-      height: '100px',
-      float: 'left'
-    }
-  }
 });
 
 module.exports = ViewAllMessages;

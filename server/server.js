@@ -119,7 +119,7 @@ app.post('/message', function (request, response) {
     longitude: request.body.longitude
   });
   newMessage.save(function (err, data){
-    console.log(data._id)
+    console.log("new message", data);
     response.send(data);
   });
   // response.send(request.session.username);

@@ -9,23 +9,26 @@ var Message = React.createClass({
 
   getInitialState: function() {
     this.loadComments();
+    console.log("messageFavs", this.props.favorites);
     return {
       commentsView: false,
-      commentRows: []
+      commentRows: [],
+      favorites: this.props.favorites
     };
   },
 
   commentsUpdate: function(newComment) {
-    console.log("comments updated");
-    var newMessageRows = this.state.commentRows.push(
+    
+    this.state.commentRows.push(
       <Comment
         commentId={ newComment._id }
         messageId={ newComment.messageId }
         comment={ newComment.comment }
         commentVotes={ 0 }
-        commentTimestamp={ newComment.timestamp } />
+        timestamp={ newComment.timestamp } />
     );
-    this.setState({messageRows: newMessageRows})
+    console.log("comments updated", this.state.commentRows);
+    this.setState({commentRows: this.state.commentRows})
   },
 
   toggleComments: function() {
@@ -51,7 +54,7 @@ var Message = React.createClass({
               messageId={ comments[i].messageId }
               comment={ comments[i].comment }
               commentVotes={ 0 }
-              commentTimestamp={ comments[i].timestamp } />
+              timestamp={ comments[i].timestamp } />
           );
         }
         this.setState({ commentRows: commentRows });
@@ -129,7 +132,7 @@ var Message = React.createClass({
 
   toggleFavorite: function(event){
     console.log("togged fav!");
-    var favs = this.props.favorites; //favorites is a object of objects with userIds as keys and true/false as values.    
+    var favs = this.state.favorites.slice(); //favorites is a object of objects with userIds as keys and true/false as values.    
     var favLocation = favs.indexOf(window.sessionStorage.userId);
     if (favLocation !== -1){
       favs.splice(favLocation, 1);
@@ -146,9 +149,11 @@ var Message = React.createClass({
         "messageId": this.props.messageId,
         "favorites": favs,
       }),
-      success: function(err, data){
-        console.log(data);
-      }
+      success: function(data, err){
+        this.setState({favorites: favs})
+        console.log("favs updated!", favs);
+      }.bind(this)
+
     });
   },
 
@@ -182,21 +187,17 @@ var Message = React.createClass({
       }
     }
 
-    // var commentRowsSortedOptions = {
-    //   recent: commentRows.slice().sort(function(a,b){
-    //     return b.props.commentTimestamp - a.props.commentTimestamp;
-    //   }),
-    //   popular: commentRows.slice().sort(function(a,b){
-    //     return b.props.commentVotes - a.props.commentVotes;
-    //   }),
-    // }
-
-    // var commentNumber = this.props.comments.length;
-                    // 119{ commentNumber } comments
+    var commentRowsSortedOptions = {
+      recent: this.state.commentRows.sort(function(a,b){
+        console.log(b.props.timestamp, a.props.timestamp);
+        return a.props.timestamp > b.props.timestamp ? -1 : 1;
+      })
+    };
+    console.log(commentRowsSortedOptions);
 
     var styleFavorites =
       // check if the 'uid' favorited the message
-      this.props.favorites.indexOf(window.sessionStorage.userId) === -1 ?
+      this.state.favorites.indexOf(window.sessionStorage.userId) === -1 ?
         {
           float: 'left',
           marginRight: '10px',
@@ -254,8 +255,8 @@ var Message = React.createClass({
           </div>
 
           <div style={ this.state.commentsView ? this.styles.commentsView : this.styles.hidden }>
-            <CommentBox messageId={ this.props.messageId } commentsUpdate={this.commentsUpdate} comments={ 0 } />
-            { this.state.commentRows }
+            <CommentBox messageId={ this.props.messageId } commentsUpdate={this.commentsUpdate} />
+            { commentRowsSortedOptions.recent }
           </div>
         </div>
       </div>

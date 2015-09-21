@@ -1,39 +1,87 @@
 var React = require('react');
-var ViewAllMessages = require('./viewAllMessages');
+var Message = require('./message');
 var TopBar = require('./topbar');
 var InputBox = require('./messageBox');
 var LoginSignupModal = require('./loginSignupModal');
 var Map = require('./map');
+var url = 'http://0.0.0.0:3000/';
 
 
-var getCookies = function(){
-  var pairs = document.cookie.split(";");
-  var cookies = {};
-  for (var i=0; i<pairs.length; i++){
-    pairs
-    var pair = pairs[i].trim().split("=");
-    cookies[pair[0]] = unescape(pair[1]);
-  }
-  return cookies;
-}
+// var getCookies = function(){
+//   var pairs = document.cookie.split(";");
+//   var cookies = {};
+//   for (var i=0; i<pairs.length; i++){
+//     pairs
+//     var pair = pairs[i].trim().split("=");
+//     cookies[pair[0]] = unescape(pair[1]);
+//   }
+//   return cookies;
+// }
 
 window.sessionStorage.userId = "Dylan";
 
-var cookies = getCookies();
-var token = document.token = cookies.token;
-var auth = document.auth = cookies.auth;
+// var cookies = getCookies();
+// var token = document.token = cookies.token;
+// var auth = document.auth = cookies.auth;
 
 var mainView = React.createClass({
 
   messages: [],
   getInitialState: function(){
+    this.getMessages();
     return {
       messages: '',
-      sort: 'recent',
-      token: '',
-      auth: '',
-      sessions: '',
+      sort: 'recent'
     };
+  },
+
+  getMessages: function(){
+    $.ajax({
+      type: 'GET',
+      url: url + 'message',
+      contentType: 'application/json',
+      success: function(messages){
+        var messages = JSON.parse(messages);
+        var messageRows = [];
+        for(var i=0; i<messages.length; i++) {
+          var message = messages[i];
+          //this is utilizing the message component and setting message properties for use in the message view.
+          // baseId={ message.baseId}
+          // hairId={ message.hairId}
+          messageRows.push(
+            <Message
+              messageId={ message._id }
+              message={ message.message }
+              comments={ message.comments }
+              totalVotes={ message.totalVotes }
+              downVotes={ message.downVotes }
+              upVotes={ message.upVotes }
+              comments={ message.comments }
+              favorites={ message.favorites }
+              timestamp={ message.timestamp } />
+          );
+        }
+        // this.setState({messages: "easy"});
+        this.setState({messages:messageRows});
+      }.bind(this)
+    });
+  },
+
+  messagesUpdate: function(message) {
+    console.log("messageUPDATEEEE", message);
+    this.state.messages.push(
+      <Message
+        messageId={ message._id }
+        message={ message.message }
+        comments={ message.comments }
+        totalVotes={ message.totalVotes }
+        downVotes={ message.downVotes }
+        upVotes={ message.upVotes }
+        comments={ message.comments }
+        favorites={ message.favorites }
+        timestamp={ message.timestamp } />
+    );
+    this.setState({messages: this.state.messages});
   },
 
   // Retrieve the messages data from Firebase
@@ -88,11 +136,18 @@ var mainView = React.createClass({
   toggleInputBox: function(){
     this.setState({ input: !this.state.input })
   },
+
   styles: {
     filter: {
       paddingTop: '80px',
       width: '100%',
       textAlign: 'center'
+    },
+    messageRows: {
+      padding: '10px',
+      width: '50%',
+      height: '100px',
+      float: 'left'
     },
     inputBox: {
       marginTop: '200px'
@@ -112,14 +167,16 @@ var mainView = React.createClass({
               <button className="btn btn-default" style={{fontFamily: 'Roboto'}} onClick={ this.handleFavorites }>Favorites</button>
               <button className="btn btn-default" style={{fontFamily: 'Roboto'}} onClick={ this.handleMyPosts }>My Posts</button>
             </div>
-            <InputBox style={this.styles.style} token={ this.state.token } auth={ this.state.auth }/>
+            <InputBox style={this.styles.style} messagesUpdate={this.messagesUpdate} />
           </div>
-          <ViewAllMessages/>
+          <div style={ this.styles.messageRows }>        
+            {this.state.messages}
+          </div>
         </div>
 
       </div>
     )
-  },
+  }
 })
 
 
