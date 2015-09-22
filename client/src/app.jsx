@@ -36,6 +36,13 @@ var mainView = React.createClass({
 
   componentWillMount: function(){
     this.getMessages();
+    if (!window.sessionStorage.username) { //if there is no username set, set it to anon.
+      window.sessionStorage.username = 'Anonymous';
+      window.sessionStorage.userId = 1;
+      window.sessionStorage.hairId = 1;
+      window.sessionStorage.faceId = 1;
+    }
+    this.loadUser();
   },
 
   getMessages: function(){
@@ -126,7 +133,11 @@ var mainView = React.createClass({
       marginTop: '200px'
     }
   },
+  loadUser: function(){
+    this.setState({username: window.sessionStorage.username});
+  },
   render: function(){
+
     var messageRowsSortedOptions = {
       recent: function() {
         console.log(this.state.messages);
@@ -170,14 +181,10 @@ var mainView = React.createClass({
       }.bind(this)
     };
 
-
-
-      
-
     return (
       <div>
-        <TopBar/>
-        <LoginSignupModal/>
+        <TopBar username={window.sessionStorage.username} loadUser={this.loadUser} />
+        <LoginSignupModal loadUser={this.loadUser} username={this.state.username} />
         <div>
           <div style={this.styles.filter}>
             <Map messages={this.state.messages}/>

@@ -80,25 +80,21 @@ var LoginSignupModal = React.createClass({
         'username': this.state.username,
         'password': this.state.password
       }),
-      success: function(data, response){
-        if(data.indexOf('Welcome') !== 0){
-          $('#username').text('Anonymous');
-          window.sessionStorage.username = 'Anonymous';
-          window.sessionStorage.userId = 1;
-          window.sessionStorage.hairId = 1;
-          window.sessionStorage.faceId = 1;
+      success: function(data){
+        if(data === "error"){ //if the login is invalid, wipe out login and pw fields.
           $('#usernameLogin').val('');
           $('#passwordLogin').val('');
         }
         else{
-          $('#username').text(window.sessionStorage.username);
           $('#myModal').modal('hide');
-          window.sessionStorage.username = response.username;
-          window.sessionStorage.userId = response._id;
-          window.sessionStorage.hairId = response.hairId;
-          window.sessionStorage.faceId = response.faceId;
+          window.sessionStorage.username = data.username;
+          window.sessionStorage.userId = data._id;
+          window.sessionStorage.hairId = data.hairId;
+          window.sessionStorage.faceId = data.faceId;
+          this.props.loadUser(); //reload the username on the homepage.
+
         }
-      }
+      }.bind(this)
     });
   },
 
@@ -116,30 +112,18 @@ var LoginSignupModal = React.createClass({
         "username": this.state.username,
         "password": this.state.password
       }),
-      success: function(data, response) {
-        if(data.indexOf('login') > 0){
-          console.log("in db");
-          $('#username').text('Anonymous');
-          window.sessionStorage.username = 'Anonymous';
-          // window.sessionStorage.username = response.username;
-          window.sessionStorage.userId = 1;
-          window.sessionStorage.hairId = 1;
-          window.sessionStorage.faceId = 1;
-          $('#usernameSignup').val('');
-          $('#passwordSignup').val('');
-        }
-        else {
+      success: function(data) {
+        if (data !== "error") {
           console.log("not in db");
-          console.log(response.username);
-          window.sessionStorage.username = response.username;
-          window.sessionStorage.userId = response._id;
-          window.sessionStorage.hairId = response.hairId;
-          window.sessionStorage.faceId = response.faceId;
-          $('#username').text(window.sessionStorage.username);
+          console.log(data.username);
+          window.sessionStorage.username = data.username;
+          window.sessionStorage.userId = data._id;
+          window.sessionStorage.hairId = data.hairId;
+          window.sessionStorage.faceId = data.faceId;
           $('#myModal').modal('hide');
-          
+          this.props.loadUser();
         }
-      }
+      }.bind(this)
     });
 
   },
