@@ -112,17 +112,35 @@ function checkUser(username, password, request, response, cb){
 }
 
 app.post('/login', function (request, response){
-  checkUser(request.body.username, request.body.password, request, response, function(clientResponse, data){
-    response.send(clientResponse, data);
+  user.findOne({username: request.body.username, password: request.body.password}, function(err, data){
+    if(data !== null){
+      response.send(data);
+    }
+    else {
+      response.send("error");
+    }
   });
 });
 
 app.post('/signup', function (request, response){
   // request.session.username = request.body.username;
-  
-  checkUser(request.body.username, request.body.password, request, response, function(clientResponse, data){
-    response.send(clientResponse, data);
-  });
+  user.findOne({username: request.body.username}, function(err, data){
+    console.log("userdat", data);
+    if(data !== null){ //if a username is found, return invalid.
+      response.send("error");
+    }
+    else{ //otherwise save the new user.
+      var newUser = new user({
+        username: request.body.username,
+        password: request.body.password,
+        hairId: Math.floor(Math.random()*98)+1,
+        faceId: Math.floor(Math.random()*17)+1
+      });
+      newUser.save(function(err, data){
+        response.send(data);
+      })
+    }
+  })
 });
 
 
